@@ -1,0 +1,77 @@
+site_name: Your Documentation
+site_description: Documentation for the AI-Powered Financial Analysis System
+site_author: Development Team
+
+# Repository
+repo_name: Financial Analysis System
+repo_url: https://github.com/tan-yong-sheng/financial-analysis-system
+
+# Theme configuration
+theme:
+  name: material
+  palette:
+    primary: indigo
+    accent: blue
+  features:
+    - navigation.tabs
+    - navigation.sections
+    - toc.integrate
+    - search.suggest
+    - search.highlight
+    - content.code.annotate
+    - content.tabs.link
+  icon:
+    repo: fontawesome/brands/github
+
+# Add plugins
+plugins:
+  - search
+
+# Extensions
+markdown_extensions:
+  - admonition
+  - codehilite:
+      guess_lang: false
+  - toc:
+      permalink: true
+  - pymdownx.tabbed
+  - pymdownx.superfences:
+      custom_fences:
+        - name: mermaid
+          class: mermaid
+          format: !!python/name:pymdownx.superfences.fence_code_format
+        - name: graphviz
+          class: graphviz
+          format: !!python/name:pymdownx.superfences.fence_code_format
+  - pymdownx.details
+  - pymdownx.emoji:
+      emoji_index: !!python/name:material.extensions.emoji.twemoji
+      emoji_generator: !!python/name:material.extensions.emoji.to_svg
+  - attr_list
+  - md_in_html
+
+# Navigation structure
+nav:
+  - Home: index.md
+  - Getting Started: getting-started.md
+  - Architecture: architecture.md
+  - Usage Guide: usage.md
+  - Agents:
+    - Overview: agents/index.md
+    - Planner Agent: agents/planner_agent.md
+    - Data Collection Agent: agents/data_collection_agent.md
+    - Research Agent: agents/research_agent.md
+    - Analysis Agent: agents/analysis_agent.md
+    - Writer Agent: agents/writer_agent.md
+    - Fact Check Agent: agents/fact_check_agent.md
+  - Modules:
+    - Overview: modules/index.md
+    - Financial Analyzer: modules/financial_analyzer.md
+    - Data Collector: modules/data_collector.md
+  - Tools:
+    - Overview: tools/index.md
+    - Data Transformer: tools/data_transformer.md
+    - Financial Data Provider: tools/financial_data_provider.md
+    - Web Research Tool: tools/web_research.md
+  - API Reference: api-reference.md
+  - Contributing: contributing.md

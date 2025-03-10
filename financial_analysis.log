@@ -1,0 +1,375 @@
+2025-03-10 08:45:29,743 - Financial_Analysis_Main - INFO - Starting analysis for AAPL
+2025-03-10 08:45:29,744 - Financial_Analysis_Orchestrator - INFO - Initializing Financial Analysis Orchestrator
+2025-03-10 08:45:29,744 - Financial_Analysis_Main - ERROR - Error during analysis: PlannerAgent.__init__() got an unexpected keyword argument 'base_url'
+Traceback (most recent call last):
+  File "/workspaces/codespaces-blank/main.py", line 37, in main
+    orchestrator = FinancialAnalysisOrchestrator()
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspaces/codespaces-blank/orchestrator.py", line 42, in __init__
+    self.planner = PlannerAgent(base_url=self.openai_base_url, model_name=self.model_name)
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+TypeError: PlannerAgent.__init__() got an unexpected keyword argument 'base_url'
+2025-03-10 08:46:37,888 - Financial_Analysis_Main - INFO - Starting analysis for AAPL
+2025-03-10 08:46:37,888 - Financial_Analysis_Orchestrator - INFO - Initializing Financial Analysis Orchestrator
+2025-03-10 08:46:37,917 - Financial_Analysis_Main - ERROR - Error during analysis: DataCollectionAgent.__init__() got an unexpected keyword argument 'base_url'
+Traceback (most recent call last):
+  File "/workspaces/codespaces-blank/main.py", line 37, in main
+    orchestrator = FinancialAnalysisOrchestrator()
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspaces/codespaces-blank/orchestrator.py", line 43, in __init__
+    self.data_collector = DataCollectionAgent(base_url=self.openai_base_url, model_name=self.model_name)
+                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+TypeError: DataCollectionAgent.__init__() got an unexpected keyword argument 'base_url'
+2025-03-10 08:48:20,424 - Financial_Analysis_Main - INFO - Starting analysis for AAPL
+2025-03-10 08:48:20,424 - Financial_Analysis_Orchestrator - INFO - Initializing Financial Analysis Orchestrator
+2025-03-10 08:48:20,488 - Financial_Analysis_Orchestrator - INFO - Starting analysis for AAPL
+2025-03-10 08:48:20,489 - Financial_Analysis_Orchestrator - INFO - Getting initial company data for planning
+2025-03-10 08:48:26,133 - httpx - INFO - HTTP Request: POST https://litellm.tanyongsheng.site/v1/chat/completions "HTTP/1.1 200 OK"
+2025-03-10 08:48:37,136 - Financial_Analysis_Orchestrator - INFO - Creating research plan
+2025-03-10 08:48:46,059 - httpx - INFO - HTTP Request: POST https://litellm.tanyongsheng.site/v1/chat/completions "HTTP/1.1 200 OK"
+2025-03-10 08:48:46,060 - Financial_Analysis_Orchestrator - INFO - Collecting detailed financial data based on plan
+2025-03-10 08:48:49,923 - httpx - INFO - HTTP Request: POST https://litellm.tanyongsheng.site/v1/chat/completions "HTTP/1.1 200 OK"
+2025-03-10 08:49:00,701 - Financial_Analysis_Orchestrator - INFO - Conducting market and industry research
+2025-03-10 08:49:05,798 - httpx - INFO - HTTP Request: POST https://litellm.tanyongsheng.site/v1/chat/completions "HTTP/1.1 200 OK"
+2025-03-10 08:56:13,416 - Financial_Analysis_Main - INFO - Starting analysis for AAPL
+2025-03-10 08:56:13,416 - Financial_Analysis_Orchestrator - INFO - Initializing Financial Analysis Orchestrator
+2025-03-10 08:56:13,502 - Financial_Analysis_Orchestrator - INFO - Starting analysis for AAPL
+2025-03-10 08:56:13,502 - Financial_Analysis_Orchestrator - INFO - Getting initial company data for planning
+2025-03-10 08:56:17,932 - httpx - INFO - HTTP Request: POST https://litellm.tanyongsheng.site/v1/chat/completions "HTTP/1.1 200 OK"
+2025-03-10 08:56:29,736 - Financial_Analysis_Orchestrator - INFO - Creating research plan
+2025-03-10 08:56:50,876 - httpx - INFO - HTTP Request: POST https://litellm.tanyongsheng.site/v1/chat/completions "HTTP/1.1 200 OK"
+2025-03-10 08:56:50,930 - Financial_Analysis_Orchestrator - INFO - Collecting detailed financial data based on plan
+2025-03-10 08:56:57,615 - httpx - INFO - HTTP Request: POST https://litellm.tanyongsheng.site/v1/chat/completions "HTTP/1.1 200 OK"
+2025-03-10 08:57:09,510 - Financial_Analysis_Orchestrator - INFO - Conducting market and industry research
+2025-03-10 08:57:09,780 - Web_Research_Tool - ERROR - Error in search_news: 401 Client Error: Unauthorized for url: https://serpapi.com/search?api_key=your_serpapi_key_here&q=Apple+Inc.+AAPL+stock+news+last+3+months&engine=google&tbm=nws
+2025-03-10 08:57:16,716 - httpx - INFO - HTTP Request: POST https://litellm.tanyongsheng.site/v1/chat/completions "HTTP/1.1 200 OK"
+2025-03-10 08:57:16,975 - Web_Research_Tool - ERROR - Error in search_google: 401 Client Error: Unauthorized for url: https://serpapi.com/search?api_key=your_serpapi_key_here&q=Consumer+Electronics+Technology+industry+trends+analysis+outlook&engine=google&num=10
+2025-03-10 08:57:22,383 - httpx - INFO - HTTP Request: POST https://litellm.tanyongsheng.site/v1/chat/completions "HTTP/1.1 200 OK"
+2025-03-10 08:57:22,644 - Web_Research_Tool - ERROR - Error in search_google: 401 Client Error: Unauthorized for url: https://serpapi.com/search?api_key=your_serpapi_key_here&q=Apple+Inc.+AAPL+competitors+Consumer+Electronics&engine=google&num=10
+2025-03-10 08:57:26,784 - httpx - INFO - HTTP Request: POST https://litellm.tanyongsheng.site/v1/chat/completions "HTTP/1.1 200 OK"
+2025-03-10 08:57:26,785 - Financial_Analysis_Orchestrator - INFO - Analyzing financial data and integrating with research
+2025-03-10 08:57:26,844 - Financial_Analysis_Orchestrator - ERROR - Error during analysis for AAPL: Object of type int64 is not JSON serializable
+Traceback (most recent call last):
+  File "/workspaces/codespaces-blank/orchestrator.py", line 116, in analyze_company
+    analysis_results = self.analyst.process(analysis_input)
+                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspaces/codespaces-blank/agents/analysis_agent.py", line 148, in process
+    analysis_results = self.analyze_financial_data(financial_data, research_plan)
+                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspaces/codespaces-blank/agents/analysis_agent.py", line 49, in analyze_financial_data
+    {json.dumps(analysis_results, indent=2)}
+     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/python/3.12.1/lib/python3.12/json/__init__.py", line 238, in dumps
+    **kw).encode(obj)
+          ^^^^^^^^^^^
+  File "/usr/local/python/3.12.1/lib/python3.12/json/encoder.py", line 202, in encode
+    chunks = list(chunks)
+             ^^^^^^^^^^^^
+  File "/usr/local/python/3.12.1/lib/python3.12/json/encoder.py", line 432, in _iterencode
+    yield from _iterencode_dict(o, _current_indent_level)
+  File "/usr/local/python/3.12.1/lib/python3.12/json/encoder.py", line 406, in _iterencode_dict
+    yield from chunks
+  File "/usr/local/python/3.12.1/lib/python3.12/json/encoder.py", line 406, in _iterencode_dict
+    yield from chunks
+  File "/usr/local/python/3.12.1/lib/python3.12/json/encoder.py", line 406, in _iterencode_dict
+    yield from chunks
+  [Previous line repeated 1 more time]
+  File "/usr/local/python/3.12.1/lib/python3.12/json/encoder.py", line 439, in _iterencode
+    o = _default(o)
+        ^^^^^^^^^^^
+  File "/usr/local/python/3.12.1/lib/python3.12/json/encoder.py", line 180, in default
+    raise TypeError(f'Object of type {o.__class__.__name__} '
+TypeError: Object of type int64 is not JSON serializable
+2025-03-10 08:57:26,862 - Financial_Analysis_Main - INFO - Analysis complete. Results saved to /workspaces/codespaces-blank/reports/AAPL_results.json
+2025-03-10 08:57:26,863 - Financial_Analysis_Main - INFO - Full report saved to unknown
+2025-03-10 08:58:04,101 - Financial_Analysis_Main - INFO - Starting analysis for AAPL
+2025-03-10 08:58:04,112 - Financial_Analysis_Orchestrator - INFO - Initializing Financial Analysis Orchestrator
+2025-03-10 08:58:04,259 - Financial_Analysis_Orchestrator - INFO - Starting analysis for AAPL
+2025-03-10 08:58:04,259 - Financial_Analysis_Orchestrator - INFO - Getting initial company data for planning
+2025-03-10 08:58:08,645 - httpx - INFO - HTTP Request: POST https://litellm.tanyongsheng.site/v1/chat/completions "HTTP/1.1 200 OK"
+2025-03-10 08:58:20,831 - Financial_Analysis_Orchestrator - INFO - Creating research plan
+2025-03-10 08:58:43,777 - httpx - INFO - HTTP Request: POST https://litellm.tanyongsheng.site/v1/chat/completions "HTTP/1.1 200 OK"
+2025-03-10 08:58:43,835 - Financial_Analysis_Orchestrator - INFO - Collecting detailed financial data based on plan
+2025-03-10 08:58:57,130 - httpx - INFO - HTTP Request: POST https://litellm.tanyongsheng.site/v1/chat/completions "HTTP/1.1 200 OK"
+2025-03-10 08:59:08,770 - Financial_Analysis_Orchestrator - INFO - Conducting market and industry research
+2025-03-10 08:59:10,198 - Web_Research_Tool - ERROR - Error in search_news: 'str' object has no attribute 'get'
+2025-03-10 08:59:18,685 - httpx - INFO - HTTP Request: POST https://litellm.tanyongsheng.site/v1/chat/completions "HTTP/1.1 200 OK"
+2025-03-10 08:59:34,531 - httpx - INFO - HTTP Request: POST https://litellm.tanyongsheng.site/v1/chat/completions "HTTP/1.1 200 OK"
+2025-03-10 08:59:46,450 - httpx - INFO - HTTP Request: POST https://litellm.tanyongsheng.site/v1/chat/completions "HTTP/1.1 200 OK"
+2025-03-10 08:59:46,452 - Financial_Analysis_Orchestrator - INFO - Analyzing financial data and integrating with research
+2025-03-10 08:59:46,514 - Financial_Analysis_Orchestrator - ERROR - Error during analysis for AAPL: Object of type int64 is not JSON serializable
+Traceback (most recent call last):
+  File "/workspaces/codespaces-blank/orchestrator.py", line 116, in analyze_company
+    analysis_results = self.analyst.process(analysis_input)
+                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspaces/codespaces-blank/agents/analysis_agent.py", line 148, in process
+    analysis_results = self.analyze_financial_data(financial_data, research_plan)
+                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspaces/codespaces-blank/agents/analysis_agent.py", line 49, in analyze_financial_data
+    {json.dumps(analysis_results, indent=2)}
+     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/python/3.12.1/lib/python3.12/json/__init__.py", line 238, in dumps
+    **kw).encode(obj)
+          ^^^^^^^^^^^
+  File "/usr/local/python/3.12.1/lib/python3.12/json/encoder.py", line 202, in encode
+    chunks = list(chunks)
+             ^^^^^^^^^^^^
+  File "/usr/local/python/3.12.1/lib/python3.12/json/encoder.py", line 432, in _iterencode
+    yield from _iterencode_dict(o, _current_indent_level)
+  File "/usr/local/python/3.12.1/lib/python3.12/json/encoder.py", line 406, in _iterencode_dict
+    yield from chunks
+  File "/usr/local/python/3.12.1/lib/python3.12/json/encoder.py", line 406, in _iterencode_dict
+    yield from chunks
+  File "/usr/local/python/3.12.1/lib/python3.12/json/encoder.py", line 406, in _iterencode_dict
+    yield from chunks
+  [Previous line repeated 1 more time]
+  File "/usr/local/python/3.12.1/lib/python3.12/json/encoder.py", line 439, in _iterencode
+    o = _default(o)
+        ^^^^^^^^^^^
+  File "/usr/local/python/3.12.1/lib/python3.12/json/encoder.py", line 180, in default
+    raise TypeError(f'Object of type {o.__class__.__name__} '
+TypeError: Object of type int64 is not JSON serializable
+2025-03-10 08:59:46,538 - Financial_Analysis_Main - INFO - Analysis complete. Results saved to /workspaces/codespaces-blank/reports/AAPL_results.json
+2025-03-10 08:59:46,538 - Financial_Analysis_Main - INFO - Full report saved to unknown
+2025-03-10 09:03:03,861 - Financial_Analysis_Main - INFO - Starting analysis for AAPL
+2025-03-10 09:03:03,862 - Financial_Analysis_Orchestrator - INFO - Initializing Financial Analysis Orchestrator
+2025-03-10 09:03:03,914 - Financial_Analysis_Orchestrator - INFO - Starting analysis for AAPL
+2025-03-10 09:03:03,915 - Financial_Analysis_Orchestrator - INFO - Getting initial company data for planning
+2025-03-10 09:03:09,038 - httpx - INFO - HTTP Request: POST https://litellm.tanyongsheng.site/v1/chat/completions "HTTP/1.1 200 OK"
+2025-03-10 09:03:21,411 - Financial_Analysis_Orchestrator - INFO - Creating research plan
+2025-03-10 09:03:42,232 - httpx - INFO - HTTP Request: POST https://litellm.tanyongsheng.site/v1/chat/completions "HTTP/1.1 200 OK"
+2025-03-10 09:03:42,300 - Financial_Analysis_Orchestrator - INFO - Collecting detailed financial data based on plan
+2025-03-10 09:03:51,611 - httpx - INFO - HTTP Request: POST https://litellm.tanyongsheng.site/v1/chat/completions "HTTP/1.1 200 OK"
+2025-03-10 09:04:03,393 - Financial_Analysis_Orchestrator - INFO - Conducting market and industry research
+2025-03-10 09:04:15,603 - httpx - INFO - HTTP Request: POST https://litellm.tanyongsheng.site/v1/chat/completions "HTTP/1.1 200 OK"
+2025-03-10 09:04:26,594 - httpx - INFO - HTTP Request: POST https://litellm.tanyongsheng.site/v1/chat/completions "HTTP/1.1 200 OK"
+2025-03-10 09:04:37,938 - httpx - INFO - HTTP Request: POST https://litellm.tanyongsheng.site/v1/chat/completions "HTTP/1.1 200 OK"
+2025-03-10 09:04:37,939 - Financial_Analysis_Orchestrator - INFO - Analyzing financial data and integrating with research
+2025-03-10 09:04:37,991 - Financial_Analysis_Orchestrator - ERROR - Error during analysis for AAPL: Object of type int64 is not JSON serializable
+Traceback (most recent call last):
+  File "/workspaces/codespaces-blank/orchestrator.py", line 116, in analyze_company
+    analysis_results = self.analyst.process(analysis_input)
+                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspaces/codespaces-blank/agents/analysis_agent.py", line 148, in process
+    analysis_results = self.analyze_financial_data(financial_data, research_plan)
+                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspaces/codespaces-blank/agents/analysis_agent.py", line 49, in analyze_financial_data
+    {json.dumps(analysis_results, indent=2)}
+     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/python/3.12.1/lib/python3.12/json/__init__.py", line 238, in dumps
+    **kw).encode(obj)
+          ^^^^^^^^^^^
+  File "/usr/local/python/3.12.1/lib/python3.12/json/encoder.py", line 202, in encode
+    chunks = list(chunks)
+             ^^^^^^^^^^^^
+  File "/usr/local/python/3.12.1/lib/python3.12/json/encoder.py", line 432, in _iterencode
+    yield from _iterencode_dict(o, _current_indent_level)
+  File "/usr/local/python/3.12.1/lib/python3.12/json/encoder.py", line 406, in _iterencode_dict
+    yield from chunks
+  File "/usr/local/python/3.12.1/lib/python3.12/json/encoder.py", line 406, in _iterencode_dict
+    yield from chunks
+  File "/usr/local/python/3.12.1/lib/python3.12/json/encoder.py", line 406, in _iterencode_dict
+    yield from chunks
+  [Previous line repeated 1 more time]
+  File "/usr/local/python/3.12.1/lib/python3.12/json/encoder.py", line 439, in _iterencode
+    o = _default(o)
+        ^^^^^^^^^^^
+  File "/usr/local/python/3.12.1/lib/python3.12/json/encoder.py", line 180, in default
+    raise TypeError(f'Object of type {o.__class__.__name__} '
+TypeError: Object of type int64 is not JSON serializable
+2025-03-10 09:04:38,010 - Financial_Analysis_Main - INFO - Analysis complete. Results saved to /workspaces/codespaces-blank/reports/AAPL_results.json
+2025-03-10 09:04:38,010 - Financial_Analysis_Main - INFO - Full report saved to unknown
+2025-03-10 09:13:51,707 - Financial_Analysis_Main - INFO - Starting analysis for AAPL
+2025-03-10 09:13:51,707 - Financial_Analysis_Orchestrator - INFO - Initializing Financial Analysis Orchestrator
+2025-03-10 09:13:51,759 - Financial_Analysis_Orchestrator - INFO - Starting analysis for AAPL
+2025-03-10 09:13:51,759 - Financial_Analysis_Orchestrator - INFO - Getting initial company data for planning
+2025-03-10 09:14:13,406 - Financial_Analysis_Main - INFO - Starting analysis for AAPL
+2025-03-10 09:14:13,407 - Financial_Analysis_Orchestrator - INFO - Initializing Financial Analysis Orchestrator
+2025-03-10 09:14:13,460 - Financial_Analysis_Orchestrator - INFO - Starting analysis for AAPL
+2025-03-10 09:14:13,460 - Financial_Analysis_Orchestrator - INFO - Getting initial company data for planning
+2025-03-10 09:14:19,103 - httpx - INFO - HTTP Request: POST https://litellm.tanyongsheng.site/v1/chat/completions "HTTP/1.1 200 OK"
+2025-03-10 09:14:30,955 - Financial_Analysis_Orchestrator - INFO - Creating research plan
+2025-03-10 09:14:49,156 - httpx - INFO - HTTP Request: POST https://litellm.tanyongsheng.site/v1/chat/completions "HTTP/1.1 200 OK"
+2025-03-10 09:14:49,200 - Financial_Analysis_Orchestrator - INFO - Collecting detailed financial data based on plan
+2025-03-10 09:15:01,594 - httpx - INFO - HTTP Request: POST https://litellm.tanyongsheng.site/v1/chat/completions "HTTP/1.1 200 OK"
+2025-03-10 09:15:13,974 - Financial_Analysis_Orchestrator - INFO - Conducting market and industry research
+2025-03-10 09:15:27,761 - httpx - INFO - HTTP Request: POST https://litellm.tanyongsheng.site/v1/chat/completions "HTTP/1.1 200 OK"
+2025-03-10 09:15:38,861 - httpx - INFO - HTTP Request: POST https://litellm.tanyongsheng.site/v1/chat/completions "HTTP/1.1 200 OK"
+2025-03-10 09:15:50,708 - httpx - INFO - HTTP Request: POST https://litellm.tanyongsheng.site/v1/chat/completions "HTTP/1.1 200 OK"
+2025-03-10 09:15:50,709 - Financial_Analysis_Orchestrator - INFO - Analyzing financial data and integrating with research
+2025-03-10 09:15:50,768 - Financial_Analysis_Orchestrator - ERROR - Error during analysis for AAPL: Object of type int64 is not JSON serializable
+Traceback (most recent call last):
+  File "/workspaces/codespaces-blank/orchestrator.py", line 116, in analyze_company
+    analysis_results = self.analyst.process(analysis_input)
+                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspaces/codespaces-blank/agents/analysis_agent.py", line 148, in process
+    analysis_results = self.analyze_financial_data(financial_data, research_plan)
+                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspaces/codespaces-blank/agents/analysis_agent.py", line 49, in analyze_financial_data
+    {json.dumps(analysis_results, indent=2)}
+     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/python/3.12.1/lib/python3.12/json/__init__.py", line 238, in dumps
+    **kw).encode(obj)
+          ^^^^^^^^^^^
+  File "/usr/local/python/3.12.1/lib/python3.12/json/encoder.py", line 202, in encode
+    chunks = list(chunks)
+             ^^^^^^^^^^^^
+  File "/usr/local/python/3.12.1/lib/python3.12/json/encoder.py", line 432, in _iterencode
+    yield from _iterencode_dict(o, _current_indent_level)
+  File "/usr/local/python/3.12.1/lib/python3.12/json/encoder.py", line 406, in _iterencode_dict
+    yield from chunks
+  File "/usr/local/python/3.12.1/lib/python3.12/json/encoder.py", line 406, in _iterencode_dict
+    yield from chunks
+  File "/usr/local/python/3.12.1/lib/python3.12/json/encoder.py", line 406, in _iterencode_dict
+    yield from chunks
+  [Previous line repeated 1 more time]
+  File "/usr/local/python/3.12.1/lib/python3.12/json/encoder.py", line 439, in _iterencode
+    o = _default(o)
+        ^^^^^^^^^^^
+  File "/usr/local/python/3.12.1/lib/python3.12/json/encoder.py", line 180, in default
+    raise TypeError(f'Object of type {o.__class__.__name__} '
+TypeError: Object of type int64 is not JSON serializable
+2025-03-10 09:49:26,031 - Financial_Analysis_Main - INFO - Starting analysis for MSFT
+2025-03-10 09:49:26,031 - Financial_Analysis_Orchestrator - INFO - Initializing Financial Analysis Orchestrator
+2025-03-10 09:49:26,087 - Financial_Analysis_Orchestrator - INFO - Starting analysis for MSFT
+2025-03-10 09:49:26,087 - Financial_Analysis_Orchestrator - INFO - Getting initial company data for planning
+2025-03-10 09:49:32,482 - httpx - INFO - HTTP Request: POST https://litellm.tanyongsheng.site/v1/chat/completions "HTTP/1.1 200 OK"
+2025-03-10 09:49:44,530 - Financial_Analysis_Orchestrator - INFO - Creating research plan
+2025-03-10 09:50:06,795 - httpx - INFO - HTTP Request: POST https://litellm.tanyongsheng.site/v1/chat/completions "HTTP/1.1 200 OK"
+2025-03-10 09:50:06,850 - Financial_Analysis_Orchestrator - INFO - Collecting detailed financial data based on plan
+2025-03-10 09:50:19,446 - httpx - INFO - HTTP Request: POST https://litellm.tanyongsheng.site/v1/chat/completions "HTTP/1.1 200 OK"
+2025-03-10 09:50:31,849 - Financial_Analysis_Orchestrator - INFO - Conducting market and industry research
+2025-03-10 09:50:48,383 - httpx - INFO - HTTP Request: POST https://litellm.tanyongsheng.site/v1/chat/completions "HTTP/1.1 200 OK"
+2025-03-10 09:51:05,554 - httpx - INFO - HTTP Request: POST https://litellm.tanyongsheng.site/v1/chat/completions "HTTP/1.1 200 OK"
+2025-03-10 09:51:20,823 - httpx - INFO - HTTP Request: POST https://litellm.tanyongsheng.site/v1/chat/completions "HTTP/1.1 200 OK"
+2025-03-10 09:51:20,824 - Financial_Analysis_Orchestrator - INFO - Analyzing financial data and integrating with research
+2025-03-10 09:51:20,893 - Financial_Analysis_Orchestrator - ERROR - Error during analysis for MSFT: Object of type Timestamp is not JSON serializable
+Traceback (most recent call last):
+  File "/workspaces/codespaces-blank/orchestrator.py", line 116, in analyze_company
+    analysis_results = self.analyst.process(analysis_input)
+                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspaces/codespaces-blank/agents/analysis_agent.py", line 156, in process
+    analysis_results = self.analyze_financial_data(financial_data, research_plan)
+                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspaces/codespaces-blank/agents/analysis_agent.py", line 53, in analyze_financial_data
+    {json.dumps(safe_analysis_results, cls=NumpyEncoder, indent=2)}
+     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/python/3.12.1/lib/python3.12/json/__init__.py", line 238, in dumps
+    **kw).encode(obj)
+          ^^^^^^^^^^^
+  File "/usr/local/python/3.12.1/lib/python3.12/json/encoder.py", line 202, in encode
+    chunks = list(chunks)
+             ^^^^^^^^^^^^
+  File "/usr/local/python/3.12.1/lib/python3.12/json/encoder.py", line 432, in _iterencode
+    yield from _iterencode_dict(o, _current_indent_level)
+  File "/usr/local/python/3.12.1/lib/python3.12/json/encoder.py", line 406, in _iterencode_dict
+    yield from chunks
+  File "/usr/local/python/3.12.1/lib/python3.12/json/encoder.py", line 406, in _iterencode_dict
+    yield from chunks
+  File "/usr/local/python/3.12.1/lib/python3.12/json/encoder.py", line 406, in _iterencode_dict
+    yield from chunks
+  File "/usr/local/python/3.12.1/lib/python3.12/json/encoder.py", line 439, in _iterencode
+    o = _default(o)
+        ^^^^^^^^^^^
+  File "/workspaces/codespaces-blank/tools/data_transformer.py", line 452, in default
+    return super().default(obj)
+           ^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/python/3.12.1/lib/python3.12/json/encoder.py", line 180, in default
+    raise TypeError(f'Object of type {o.__class__.__name__} '
+TypeError: Object of type Timestamp is not JSON serializable
+2025-03-10 09:55:41,091 - Financial_Analysis_Main - INFO - Starting analysis for MSFT
+2025-03-10 09:55:41,092 - Financial_Analysis_Orchestrator - INFO - Initializing Financial Analysis Orchestrator
+2025-03-10 09:55:41,154 - Financial_Analysis_Orchestrator - INFO - Starting analysis for MSFT
+2025-03-10 09:55:41,154 - Financial_Analysis_Orchestrator - INFO - Getting initial company data for planning
+2025-03-10 09:55:48,965 - httpx - INFO - HTTP Request: POST https://litellm.tanyongsheng.site/v1/chat/completions "HTTP/1.1 200 OK"
+2025-03-10 09:56:00,791 - Financial_Analysis_Orchestrator - INFO - Creating research plan
+2025-03-10 09:56:21,663 - httpx - INFO - HTTP Request: POST https://litellm.tanyongsheng.site/v1/chat/completions "HTTP/1.1 200 OK"
+2025-03-10 09:56:21,715 - Financial_Analysis_Orchestrator - INFO - Collecting detailed financial data based on plan
+2025-03-10 09:56:32,181 - httpx - INFO - HTTP Request: POST https://litellm.tanyongsheng.site/v1/chat/completions "HTTP/1.1 200 OK"
+2025-03-10 09:56:43,894 - Financial_Analysis_Orchestrator - INFO - Conducting market and industry research
+2025-03-10 09:56:54,184 - httpx - INFO - HTTP Request: POST https://litellm.tanyongsheng.site/v1/chat/completions "HTTP/1.1 200 OK"
+2025-03-10 09:57:05,724 - httpx - INFO - HTTP Request: POST https://litellm.tanyongsheng.site/v1/chat/completions "HTTP/1.1 200 OK"
+2025-03-10 09:57:20,425 - httpx - INFO - HTTP Request: POST https://litellm.tanyongsheng.site/v1/chat/completions "HTTP/1.1 200 OK"
+2025-03-10 09:57:20,426 - Financial_Analysis_Orchestrator - INFO - Analyzing financial data and integrating with research
+2025-03-10 09:57:20,491 - Financial_Analysis_Orchestrator - ERROR - Error during analysis for MSFT: Object of type Timestamp is not JSON serializable
+Traceback (most recent call last):
+  File "/workspaces/codespaces-blank/orchestrator.py", line 116, in analyze_company
+    analysis_results = self.analyst.process(analysis_input)
+                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspaces/codespaces-blank/agents/analysis_agent.py", line 156, in process
+    analysis_results = self.analyze_financial_data(financial_data, research_plan)
+                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspaces/codespaces-blank/agents/analysis_agent.py", line 53, in analyze_financial_data
+    {json.dumps(safe_analysis_results, cls=NumpyEncoder, indent=2)}
+     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/python/3.12.1/lib/python3.12/json/__init__.py", line 238, in dumps
+    **kw).encode(obj)
+          ^^^^^^^^^^^
+  File "/usr/local/python/3.12.1/lib/python3.12/json/encoder.py", line 202, in encode
+    chunks = list(chunks)
+             ^^^^^^^^^^^^
+  File "/usr/local/python/3.12.1/lib/python3.12/json/encoder.py", line 432, in _iterencode
+    yield from _iterencode_dict(o, _current_indent_level)
+  File "/usr/local/python/3.12.1/lib/python3.12/json/encoder.py", line 406, in _iterencode_dict
+    yield from chunks
+  File "/usr/local/python/3.12.1/lib/python3.12/json/encoder.py", line 406, in _iterencode_dict
+    yield from chunks
+  File "/usr/local/python/3.12.1/lib/python3.12/json/encoder.py", line 406, in _iterencode_dict
+    yield from chunks
+  File "/usr/local/python/3.12.1/lib/python3.12/json/encoder.py", line 439, in _iterencode
+    o = _default(o)
+        ^^^^^^^^^^^
+  File "/workspaces/codespaces-blank/tools/data_transformer.py", line 452, in default
+    return super().default(obj)
+           ^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/python/3.12.1/lib/python3.12/json/encoder.py", line 180, in default
+    raise TypeError(f'Object of type {o.__class__.__name__} '
+TypeError: Object of type Timestamp is not JSON serializable
+2025-03-10 10:03:16,739 - Financial_Analysis_Main - INFO - Starting analysis for MSFT
+2025-03-10 10:03:16,739 - Financial_Analysis_Orchestrator - INFO - Initializing Financial Analysis Orchestrator
+2025-03-10 10:03:16,795 - Financial_Analysis_Orchestrator - INFO - Starting analysis for MSFT
+2025-03-10 10:03:16,796 - Financial_Analysis_Orchestrator - INFO - Getting initial company data for planning
+2025-03-10 10:03:20,105 - httpx - INFO - HTTP Request: POST https://litellm.tanyongsheng.site/v1/chat/completions "HTTP/1.1 200 OK"
+2025-03-10 10:03:31,971 - Financial_Analysis_Orchestrator - INFO - Creating research plan
+2025-03-10 10:03:54,683 - httpx - INFO - HTTP Request: POST https://litellm.tanyongsheng.site/v1/chat/completions "HTTP/1.1 200 OK"
+2025-03-10 10:03:54,737 - Financial_Analysis_Orchestrator - INFO - Collecting detailed financial data based on plan
+2025-03-10 10:04:01,475 - httpx - INFO - HTTP Request: POST https://litellm.tanyongsheng.site/v1/chat/completions "HTTP/1.1 200 OK"
+2025-03-10 10:04:13,127 - Financial_Analysis_Orchestrator - INFO - Conducting market and industry research
+2025-03-10 10:04:24,394 - httpx - INFO - HTTP Request: POST https://litellm.tanyongsheng.site/v1/chat/completions "HTTP/1.1 200 OK"
+2025-03-10 10:04:34,828 - httpx - INFO - HTTP Request: POST https://litellm.tanyongsheng.site/v1/chat/completions "HTTP/1.1 200 OK"
+2025-03-10 10:04:51,106 - httpx - INFO - HTTP Request: POST https://litellm.tanyongsheng.site/v1/chat/completions "HTTP/1.1 200 OK"
+2025-03-10 10:04:51,107 - Financial_Analysis_Orchestrator - INFO - Analyzing financial data and integrating with research
+2025-03-10 10:04:51,175 - Financial_Analysis_Orchestrator - ERROR - Error during analysis for MSFT: Object of type Timestamp is not JSON serializable
+Traceback (most recent call last):
+  File "/workspaces/codespaces-blank/orchestrator.py", line 116, in analyze_company
+    analysis_results = self.analyst.process(analysis_input)
+                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspaces/codespaces-blank/agents/analysis_agent.py", line 156, in process
+    analysis_results = self.analyze_financial_data(financial_data, research_plan)
+                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspaces/codespaces-blank/agents/analysis_agent.py", line 53, in analyze_financial_data
+    {json.dumps(safe_analysis_results, cls=NumpyEncoder, indent=2)}
+     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/python/3.12.1/lib/python3.12/json/__init__.py", line 238, in dumps
+    **kw).encode(obj)
+          ^^^^^^^^^^^
+  File "/usr/local/python/3.12.1/lib/python3.12/json/encoder.py", line 202, in encode
+    chunks = list(chunks)
+             ^^^^^^^^^^^^
+  File "/usr/local/python/3.12.1/lib/python3.12/json/encoder.py", line 432, in _iterencode
+    yield from _iterencode_dict(o, _current_indent_level)
+  File "/usr/local/python/3.12.1/lib/python3.12/json/encoder.py", line 406, in _iterencode_dict
+    yield from chunks
+  File "/usr/local/python/3.12.1/lib/python3.12/json/encoder.py", line 406, in _iterencode_dict
+    yield from chunks
+  File "/usr/local/python/3.12.1/lib/python3.12/json/encoder.py", line 406, in _iterencode_dict
+    yield from chunks
+  File "/usr/local/python/3.12.1/lib/python3.12/json/encoder.py", line 439, in _iterencode
+    o = _default(o)
+        ^^^^^^^^^^^
+  File "/workspaces/codespaces-blank/tools/data_transformer.py", line 545, in default
+    return super().default(obj)
+           ^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/python/3.12.1/lib/python3.12/json/encoder.py", line 180, in default
+    raise TypeError(f'Object of type {o.__class__.__name__} '
+TypeError: Object of type Timestamp is not JSON serializable
