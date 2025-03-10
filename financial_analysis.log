@@ -373,3 +373,122 @@ Traceback (most recent call last):
   File "/usr/local/python/3.12.1/lib/python3.12/json/encoder.py", line 180, in default
     raise TypeError(f'Object of type {o.__class__.__name__} '
 TypeError: Object of type Timestamp is not JSON serializable
+2025-03-10 12:51:26,124 - Financial_Analysis_Main - INFO - Starting analysis for AAPL
+2025-03-10 12:51:26,125 - Financial_Analysis_Orchestrator - INFO - Initializing Financial Analysis Orchestrator
+2025-03-10 12:51:26,218 - Financial_Analysis_Orchestrator - INFO - Starting analysis for AAPL
+2025-03-10 12:51:26,218 - Financial_Analysis_Orchestrator - INFO - Getting initial company data for planning
+2025-03-10 12:51:26,308 - openai._base_client - INFO - Retrying request to /chat/completions in 0.402332 seconds
+2025-03-10 12:51:26,812 - openai._base_client - INFO - Retrying request to /chat/completions in 0.827663 seconds
+2025-03-10 12:51:37,762 - Financial_Analysis_Orchestrator - INFO - Creating research plan
+2025-03-10 12:51:37,777 - openai._base_client - INFO - Retrying request to /chat/completions in 0.493800 seconds
+2025-03-10 12:51:38,286 - openai._base_client - INFO - Retrying request to /chat/completions in 0.808757 seconds
+2025-03-10 12:51:39,106 - Financial_Analysis_Orchestrator - INFO - Collecting detailed financial data based on plan
+2025-03-10 12:51:39,123 - openai._base_client - INFO - Retrying request to /chat/completions in 0.492207 seconds
+2025-03-10 12:51:39,626 - openai._base_client - INFO - Retrying request to /chat/completions in 0.834185 seconds
+2025-03-10 12:52:01,002 - Financial_Analysis_Main - INFO - Starting analysis for AAPL
+2025-03-10 12:52:01,003 - Financial_Analysis_Orchestrator - INFO - Initializing Financial Analysis Orchestrator
+2025-03-10 12:52:01,056 - Financial_Analysis_Orchestrator - INFO - Starting analysis for AAPL
+2025-03-10 12:52:01,056 - Financial_Analysis_Orchestrator - INFO - Getting initial company data for planning
+2025-03-10 12:52:03,715 - httpx - INFO - HTTP Request: POST https://litellm.tanyongsheng.site/v1/chat/completions "HTTP/1.1 200 OK"
+2025-03-10 12:52:15,589 - Financial_Analysis_Orchestrator - INFO - Creating research plan
+2025-03-10 12:52:25,111 - httpx - INFO - HTTP Request: POST https://litellm.tanyongsheng.site/v1/chat/completions "HTTP/1.1 200 OK"
+2025-03-10 12:52:25,112 - Financial_Analysis_Orchestrator - INFO - Collecting detailed financial data based on plan
+2025-03-10 12:52:28,494 - httpx - INFO - HTTP Request: POST https://litellm.tanyongsheng.site/v1/chat/completions "HTTP/1.1 200 OK"
+2025-03-10 12:52:40,499 - Financial_Analysis_Orchestrator - INFO - Conducting market and industry research
+2025-03-10 12:52:51,961 - httpx - INFO - HTTP Request: POST https://litellm.tanyongsheng.site/v1/chat/completions "HTTP/1.1 200 OK"
+2025-03-10 12:53:00,093 - httpx - INFO - HTTP Request: POST https://litellm.tanyongsheng.site/v1/chat/completions "HTTP/1.1 200 OK"
+2025-03-10 12:53:07,082 - httpx - INFO - HTTP Request: POST https://litellm.tanyongsheng.site/v1/chat/completions "HTTP/1.1 200 OK"
+2025-03-10 12:53:07,083 - Financial_Analysis_Orchestrator - INFO - Analyzing financial data and integrating with research
+2025-03-10 12:53:07,168 - Financial_Analysis_Orchestrator - ERROR - Error during analysis for AAPL: Object of type Timestamp is not JSON serializable
+Traceback (most recent call last):
+  File "/workspaces/financial-analysis-system/orchestrator.py", line 116, in analyze_company
+    analysis_results = self.analyst.process(analysis_input)
+                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspaces/financial-analysis-system/agents/analysis_agent.py", line 156, in process
+    analysis_results = self.analyze_financial_data(financial_data, research_plan)
+                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspaces/financial-analysis-system/agents/analysis_agent.py", line 53, in analyze_financial_data
+    {json.dumps(safe_analysis_results, cls=NumpyEncoder, indent=2)}
+     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/python/3.12.1/lib/python3.12/json/__init__.py", line 238, in dumps
+    **kw).encode(obj)
+          ^^^^^^^^^^^
+  File "/usr/local/python/3.12.1/lib/python3.12/json/encoder.py", line 202, in encode
+    chunks = list(chunks)
+             ^^^^^^^^^^^^
+  File "/usr/local/python/3.12.1/lib/python3.12/json/encoder.py", line 432, in _iterencode
+    yield from _iterencode_dict(o, _current_indent_level)
+  File "/usr/local/python/3.12.1/lib/python3.12/json/encoder.py", line 406, in _iterencode_dict
+    yield from chunks
+  File "/usr/local/python/3.12.1/lib/python3.12/json/encoder.py", line 406, in _iterencode_dict
+    yield from chunks
+  File "/usr/local/python/3.12.1/lib/python3.12/json/encoder.py", line 406, in _iterencode_dict
+    yield from chunks
+  File "/usr/local/python/3.12.1/lib/python3.12/json/encoder.py", line 439, in _iterencode
+    o = _default(o)
+        ^^^^^^^^^^^
+  File "/workspaces/financial-analysis-system/tools/data_transformer.py", line 545, in default
+    return super().default(obj)
+           ^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/python/3.12.1/lib/python3.12/json/encoder.py", line 180, in default
+    raise TypeError(f'Object of type {o.__class__.__name__} '
+TypeError: Object of type Timestamp is not JSON serializable
+2025-03-10 12:59:23,299 - Financial_Analysis_Main - INFO - Starting analysis for AAPL
+2025-03-10 12:59:23,299 - Financial_Analysis_Orchestrator - INFO - Initializing Financial Analysis Orchestrator
+2025-03-10 12:59:23,359 - Financial_Analysis_Orchestrator - INFO - Starting analysis for AAPL
+2025-03-10 12:59:23,359 - Financial_Analysis_Orchestrator - INFO - Getting initial company data for planning
+2025-03-10 12:59:27,430 - httpx - INFO - HTTP Request: POST https://litellm.tanyongsheng.site/v1/chat/completions "HTTP/1.1 200 OK"
+2025-03-10 12:59:39,255 - Financial_Analysis_Orchestrator - INFO - Creating research plan
+2025-03-10 12:59:51,043 - httpx - INFO - HTTP Request: POST https://litellm.tanyongsheng.site/v1/chat/completions "HTTP/1.1 200 OK"
+2025-03-10 12:59:51,044 - Financial_Analysis_Orchestrator - INFO - Collecting detailed financial data based on plan
+2025-03-10 12:59:54,595 - httpx - INFO - HTTP Request: POST https://litellm.tanyongsheng.site/v1/chat/completions "HTTP/1.1 200 OK"
+2025-03-10 13:00:02,471 - Financial_Data_Provider - ERROR - HTTP error when calling https://financialmodelingprep.com/api/v3/ratios/AAPL: 429 Client Error: Too Many Requests for url: https://financialmodelingprep.com/api/v3/ratios/AAPL?period=annual&limit=5&apikey=e20f0af1bd6fc649db0608b7793aad83
+2025-03-10 13:00:03,421 - Financial_Data_Provider - ERROR - HTTP error when calling https://financialmodelingprep.com/api/v3/technical_indicator/daily/sma/AAPL: 429 Client Error: Too Many Requests for url: https://financialmodelingprep.com/api/v3/technical_indicator/daily/sma/AAPL?period=14&apikey=e20f0af1bd6fc649db0608b7793aad83
+2025-03-10 13:00:04,375 - Financial_Data_Provider - ERROR - HTTP error when calling https://financialmodelingprep.com/api/v3/technical_indicator/daily/ema/AAPL: 429 Client Error: Too Many Requests for url: https://financialmodelingprep.com/api/v3/technical_indicator/daily/ema/AAPL?period=14&apikey=e20f0af1bd6fc649db0608b7793aad83
+2025-03-10 13:00:05,474 - Financial_Data_Provider - ERROR - HTTP error when calling https://financialmodelingprep.com/api/v3/technical_indicator/daily/rsi/AAPL: 429 Client Error: Too Many Requests for url: https://financialmodelingprep.com/api/v3/technical_indicator/daily/rsi/AAPL?period=14&apikey=e20f0af1bd6fc649db0608b7793aad83
+2025-03-10 13:00:06,422 - Financial_Data_Provider - ERROR - HTTP error when calling https://financialmodelingprep.com/api/v3/technical_indicator/daily/macd/AAPL: 429 Client Error: Too Many Requests for url: https://financialmodelingprep.com/api/v3/technical_indicator/daily/macd/AAPL?period=14&apikey=e20f0af1bd6fc649db0608b7793aad83
+2025-03-10 13:00:06,423 - Financial_Analysis_Orchestrator - INFO - Conducting market and industry research
+2025-03-10 13:00:11,995 - httpx - INFO - HTTP Request: POST https://litellm.tanyongsheng.site/v1/chat/completions "HTTP/1.1 200 OK"
+2025-03-10 13:00:20,073 - httpx - INFO - HTTP Request: POST https://litellm.tanyongsheng.site/v1/chat/completions "HTTP/1.1 200 OK"
+2025-03-10 13:00:26,700 - httpx - INFO - HTTP Request: POST https://litellm.tanyongsheng.site/v1/chat/completions "HTTP/1.1 200 OK"
+2025-03-10 13:00:26,701 - Financial_Analysis_Orchestrator - INFO - Analyzing financial data and integrating with research
+2025-03-10 13:00:38,701 - httpx - INFO - HTTP Request: POST https://litellm.tanyongsheng.site/v1/chat/completions "HTTP/1.1 200 OK"
+2025-03-10 13:00:49,650 - httpx - INFO - HTTP Request: POST https://litellm.tanyongsheng.site/v1/chat/completions "HTTP/1.1 200 OK"
+2025-03-10 13:00:49,651 - Financial_Analysis_Orchestrator - INFO - Writing financial research report
+2025-03-10 13:00:58,742 - httpx - INFO - HTTP Request: POST https://litellm.tanyongsheng.site/v1/chat/completions "HTTP/1.1 200 OK"
+2025-03-10 13:01:02,171 - httpx - INFO - HTTP Request: POST https://litellm.tanyongsheng.site/v1/chat/completions "HTTP/1.1 200 OK"
+2025-03-10 13:01:10,297 - httpx - INFO - HTTP Request: POST https://litellm.tanyongsheng.site/v1/chat/completions "HTTP/1.1 200 OK"
+2025-03-10 13:01:15,530 - httpx - INFO - HTTP Request: POST https://litellm.tanyongsheng.site/v1/chat/completions "HTTP/1.1 200 OK"
+2025-03-10 13:01:15,531 - Financial_Analysis_Orchestrator - INFO - Fact checking and validating the report
+2025-03-10 13:01:20,136 - httpx - INFO - HTTP Request: POST https://litellm.tanyongsheng.site/v1/chat/completions "HTTP/1.1 200 OK"
+2025-03-10 13:01:32,743 - httpx - INFO - HTTP Request: POST https://litellm.tanyongsheng.site/v1/chat/completions "HTTP/1.1 200 OK"
+2025-03-10 13:01:32,799 - Financial_Analysis_Orchestrator - INFO - Analysis completed for AAPL in 129.44 seconds
+2025-03-10 13:01:32,799 - Financial_Analysis_Orchestrator - INFO - Report saved to /workspaces/financial-analysis-system/reports/AAPL_analysis.md
+2025-03-10 13:01:32,799 - Financial_Analysis_Orchestrator - INFO - Results saved to /workspaces/financial-analysis-system/reports/AAPL_results.json
+2025-03-10 13:03:17,618 - Financial_Analysis_Main - INFO - Starting analysis for AAPL
+2025-03-10 13:03:17,619 - Financial_Analysis_Orchestrator - INFO - Initializing Financial Analysis Orchestrator
+2025-03-10 13:03:17,675 - Financial_Analysis_Orchestrator - INFO - Starting analysis for AAPL
+2025-03-10 13:03:17,675 - Financial_Analysis_Orchestrator - INFO - Getting initial company data for planning
+2025-03-10 13:03:21,831 - httpx - INFO - HTTP Request: POST https://litellm.tanyongsheng.site/v1/chat/completions "HTTP/1.1 200 OK"
+2025-03-10 13:03:33,480 - Financial_Analysis_Orchestrator - INFO - Creating research plan
+2025-03-10 13:03:44,684 - httpx - INFO - HTTP Request: POST https://litellm.tanyongsheng.site/v1/chat/completions "HTTP/1.1 200 OK"
+2025-03-10 13:03:44,686 - Financial_Analysis_Orchestrator - INFO - Collecting detailed financial data based on plan
+2025-03-10 13:03:49,632 - httpx - INFO - HTTP Request: POST https://litellm.tanyongsheng.site/v1/chat/completions "HTTP/1.1 200 OK"
+2025-03-10 13:04:01,378 - Financial_Analysis_Orchestrator - INFO - Conducting market and industry research
+2025-03-10 13:04:06,972 - httpx - INFO - HTTP Request: POST https://litellm.tanyongsheng.site/v1/chat/completions "HTTP/1.1 200 OK"
+2025-03-10 13:04:14,145 - httpx - INFO - HTTP Request: POST https://litellm.tanyongsheng.site/v1/chat/completions "HTTP/1.1 200 OK"
+2025-03-10 13:04:21,568 - httpx - INFO - HTTP Request: POST https://litellm.tanyongsheng.site/v1/chat/completions "HTTP/1.1 200 OK"
+2025-03-10 13:04:21,569 - Financial_Analysis_Orchestrator - INFO - Analyzing financial data and integrating with research
+2025-03-10 13:04:28,863 - httpx - INFO - HTTP Request: POST https://litellm.tanyongsheng.site/v1/chat/completions "HTTP/1.1 200 OK"
+2025-03-10 13:04:37,122 - httpx - INFO - HTTP Request: POST https://litellm.tanyongsheng.site/v1/chat/completions "HTTP/1.1 200 OK"
+2025-03-10 13:04:37,123 - Financial_Analysis_Orchestrator - INFO - Writing financial research report
+2025-03-10 13:04:46,422 - httpx - INFO - HTTP Request: POST https://litellm.tanyongsheng.site/v1/chat/completions "HTTP/1.1 200 OK"
+2025-03-10 13:04:49,580 - httpx - INFO - HTTP Request: POST https://litellm.tanyongsheng.site/v1/chat/completions "HTTP/1.1 200 OK"
+2025-03-10 13:04:57,057 - httpx - INFO - HTTP Request: POST https://litellm.tanyongsheng.site/v1/chat/completions "HTTP/1.1 200 OK"
+2025-03-10 13:05:01,242 - httpx - INFO - HTTP Request: POST https://litellm.tanyongsheng.site/v1/chat/completions "HTTP/1.1 200 OK"
+2025-03-10 13:05:01,243 - Financial_Analysis_Orchestrator - INFO - Fact checking and validating the report
+2025-03-10 13:05:04,538 - httpx - INFO - HTTP Request: POST https://litellm.tanyongsheng.site/v1/chat/completions "HTTP/1.1 200 OK"
+2025-03-10 13:05:16,161 - httpx - INFO - HTTP Request: POST https://litellm.tanyongsheng.site/v1/chat/completions "HTTP/1.1 200 OK"
+2025-03-10 13:05:16,175 - Financial_Analysis_Orchestrator - INFO - Analysis completed for AAPL in 118.50 seconds
+2025-03-10 13:05:16,175 - Financial_Analysis_Orchestrator - INFO - Report saved to /workspaces/financial-analysis-system/reports/AAPL_analysis.md
+2025-03-10 13:05:16,176 - Financial_Analysis_Orchestrator - INFO - Results saved to /workspaces/financial-analysis-system/reports/AAPL_results.json
