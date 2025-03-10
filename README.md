@@ -50,8 +50,11 @@ pip install -r requirements.txt
 3. Create a `.env` file with your API keys:
 ```plaintext
 OPENAI_API_KEY=your_openai_api_key
+OPENAI_BASE_URL=your_openai_base_url_or_openai_default
+OPENAI_MODEL_NAME=gpt-4
+
+SERPAPI_API_KEY=your_serpapi_api_key
 FMP_API_KEY=your_financial_modeling_prep_api_key
-SERPER_API_KEY=your_serper_api_key
 ```
 
 ## Usage
