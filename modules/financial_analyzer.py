@@ -52,11 +52,6 @@ class FinancialAnalyzer:
         """
         Analyze income statement data to extract revenue trends, profitability metrics, and growth rates.
         
-        This method calculates key income statement metrics including:
-        - Revenue growth rates
-        - Net income growth rates
-        - Gross, operating, and profit margins
-        
         Args:
             income_data (list): Income statement data as a list of dictionaries
             
@@ -69,27 +64,46 @@ class FinancialAnalyzer:
                 return {"error": "Invalid income statement data"}
                 
             df = pd.DataFrame(income_data)
+            
+            # Print debugging information to understand the actual data
+            print(f"Columns in income statement: {df.columns.tolist()}")
+            
             df = clean_and_convert_numeric(df)
             
+            # Debug Boolean context issues by using explicit checks
+            has_revenue = 'revenue' in df.columns
+            has_net_income = 'netIncome' in df.columns
+            has_gross_profit = 'grossProfit' in df.columns
+            has_operating_income = 'operatingIncome' in df.columns
+            
+            # Fix for test data - convert columns to lowercase if needed
+            if not has_revenue and 'Revenue' in df.columns:
+                df.rename(columns={'Revenue': 'revenue'}, inplace=True)
+                has_revenue = True
+                
+            if not has_net_income and 'Net Income' in df.columns:
+                df.rename(columns={'Net Income': 'netIncome'}, inplace=True)
+                has_net_income = True
+                
             # Calculate growth rates
-            if 'revenue' in df.columns:
+            if has_revenue:
                 # Calculate YoY revenue growth (negative index because data is typically in reverse chronological order)
                 df['revenue_growth'] = df['revenue'].pct_change(-1) * 100
                 
-            if 'netIncome' in df.columns:
+            if has_net_income:
                 # Calculate YoY net income growth
                 df['net_income_growth'] = df['netIncome'].pct_change(-1) * 100
                 
             # Calculate profit margins
-            if 'grossProfit' in df.columns and 'revenue' in df.columns:
+            if has_gross_profit and has_revenue:
                 # Gross margin = Gross profit / Revenue
                 df['gross_margin'] = (df['grossProfit'] / df['revenue']) * 100
                 
-            if 'operatingIncome' in df.columns and 'revenue' in df.columns:
+            if has_operating_income and has_revenue:
                 # Operating margin = Operating income / Revenue
                 df['operating_margin'] = (df['operatingIncome'] / df['revenue']) * 100
                 
-            if 'netIncome' in df.columns and 'revenue' in df.columns:
+            if has_net_income and has_revenue:
                 # Net profit margin = Net income / Revenue
                 df['profit_margin'] = (df['netIncome'] / df['revenue']) * 100
             
@@ -97,8 +111,8 @@ class FinancialAnalyzer:
             analysis = {
                 "summary": {
                     "latest_year": df['date'].iloc[0] if 'date' in df.columns else None,
-                    "latest_revenue": float(df['revenue'].iloc[0]) if 'revenue' in df.columns else None,
-                    "latest_net_income": float(df['netIncome'].iloc[0]) if 'netIncome' in df.columns else None,
+                    "latest_revenue": float(df['revenue'].iloc[0]) if has_revenue else None,
+                    "latest_net_income": float(df['netIncome'].iloc[0]) if has_net_income else None,
                 },
                 "growth": {
                     # Handle NaN values which can occur in growth calculations for the first period
@@ -110,7 +124,7 @@ class FinancialAnalyzer:
                     "operating_margin": float(df['operating_margin'].iloc[0]) if 'operating_margin' in df.columns else None,
                     "profit_margin": float(df['profit_margin'].iloc[0]) if 'profit_margin' in df.columns else None
                 },
-                "trends": convert_numpy_types(df.head())  # Include recent records for trend analysis
+                "trends": convert_numpy_types(df.head(3).to_dict())  # Include recent records for trend analysis
             }
             
             # Ensure all values are JSON serializable
@@ -137,30 +151,37 @@ class FinancialAnalyzer:
             df = pd.DataFrame(balance_data)
             df = clean_and_convert_numeric(df)
             
-            # Calculate key ratios
-            if 'totalCurrentAssets' in df.columns and 'totalCurrentLiabilities' in df.columns:
+            # Debug Boolean context issues by using explicit checks
+            has_total_current_assets = 'totalCurrentAssets' in df.columns
+            has_total_current_liabilities = 'totalCurrentLiabilities' in df.columns
+            has_total_assets = 'totalAssets' in df.columns
+            has_total_liabilities = 'totalLiabilities' in df.columns
+            has_stockholders_equity = 'totalStockholdersEquity' in df.columns
+            
+            # Calculate key ratios with explicit checks
+            if has_total_current_assets and has_total_current_liabilities:
                 df['current_ratio'] = df['totalCurrentAssets'] / df['totalCurrentLiabilities']
                 
-            if 'totalAssets' in df.columns and 'totalLiabilities' in df.columns:
+            if has_total_assets and has_total_liabilities:
                 df['debt_to_assets'] = df['totalLiabilities'] / df['totalAssets']
                 
-            if 'totalAssets' in df.columns and 'totalStockholdersEquity' in df.columns:
+            if has_total_assets and has_stockholders_equity:
                 df['return_on_assets'] = df['totalStockholdersEquity'] / df['totalAssets']
                 
             # Create analysis results dictionary
             analysis = {
                 "summary": {
                     "latest_date": df['date'].iloc[0] if 'date' in df.columns else None,
-                    "total_assets": float(df['totalAssets'].iloc[0]) if 'totalAssets' in df.columns else None,
-                    "total_liabilities": float(df['totalLiabilities'].iloc[0]) if 'totalLiabilities' in df.columns else None,
-                    "stockholders_equity": float(df['totalStockholdersEquity'].iloc[0]) if 'totalStockholdersEquity' in df.columns else None
+                    "total_assets": float(df['totalAssets'].iloc[0]) if has_total_assets else None,
+                    "total_liabilities": float(df['totalLiabilities'].iloc[0]) if has_total_liabilities else None,
+                    "stockholders_equity": float(df['totalStockholdersEquity'].iloc[0]) if has_stockholders_equity else None
                 },
                 "ratios": {
                     "current_ratio": float(df['current_ratio'].iloc[0]) if 'current_ratio' in df.columns else None,
                     "debt_to_assets": float(df['debt_to_assets'].iloc[0]) if 'debt_to_assets' in df.columns else None,
                     "return_on_assets": float(df['return_on_assets'].iloc[0]) if 'return_on_assets' in df.columns else None
                 },
-                "trends": convert_numpy_types(df.head())
+                "trends": convert_numpy_types(df.head().to_dict('records'))  # Convert directly to records to avoid DataFrame issues
             }
             
             return self._ensure_json_serializable(analysis)
@@ -186,31 +207,32 @@ class FinancialAnalyzer:
             df = pd.DataFrame(cash_flow_data)
             df = clean_and_convert_numeric(df)
             
-            # Calculate key metrics
-            if 'netCashProvidedByOperatingActivities' in df.columns:
-                operating_cash = df['netCashProvidedByOperatingActivities']
-            else:
-                operating_cash = None
-                
-            if 'capitalExpenditure' in df.columns and operating_cash is not None:
-                df['free_cash_flow'] = operating_cash - df['capitalExpenditure']
+            # Debug Boolean context issues by using explicit checks
+            has_op_cash = 'netCashProvidedByOperatingActivities' in df.columns
+            has_inv_cash = 'netCashUsedForInvestingActivites' in df.columns
+            has_fin_cash = 'netCashUsedProvidedByFinancingActivities' in df.columns
+            has_capex = 'capitalExpenditure' in df.columns
+            
+            # Calculate key metrics - only if necessary columns exist
+            if has_op_cash and has_capex:
+                df['free_cash_flow'] = df['netCashProvidedByOperatingActivities'] - df['capitalExpenditure']
                 
             # Create analysis results dictionary
             analysis = {
                 "summary": {
                     "latest_date": df['date'].iloc[0] if 'date' in df.columns else None,
                     "operating_cash_flow": float(df['netCashProvidedByOperatingActivities'].iloc[0]) 
-                        if 'netCashProvidedByOperatingActivities' in df.columns else None,
+                        if has_op_cash else None,
                     "investing_cash_flow": float(df['netCashUsedForInvestingActivites'].iloc[0]) 
-                        if 'netCashUsedForInvestingActivites' in df.columns else None,
+                        if has_inv_cash else None,
                     "financing_cash_flow": float(df['netCashUsedProvidedByFinancingActivities'].iloc[0]) 
-                        if 'netCashUsedProvidedByFinancingActivities' in df.columns else None
+                        if has_fin_cash else None
                 },
                 "metrics": {
                     "free_cash_flow": float(df['free_cash_flow'].iloc[0]) if 'free_cash_flow' in df.columns else None,
-                    "capital_expenditure": float(df['capitalExpenditure'].iloc[0]) if 'capitalExpenditure' in df.columns else None
+                    "capital_expenditure": float(df['capitalExpenditure'].iloc[0]) if has_capex else None
                 },
-                "trends": convert_numpy_types(df.head())
+                "trends": convert_numpy_types(df.head().to_dict('records'))  # Convert to records format directly
             }
             
             return self._ensure_json_serializable(analysis)
@@ -230,8 +252,15 @@ class FinancialAnalyzer:
         """
         analysis = {}
         
+        # Handle the case where technical_data might be None or invalid
+        if not technical_data or not isinstance(technical_data, dict):
+            return {"error": "Invalid technical data"}
+            
+        # Print debug info to understand the structure
+        print(f"Technical data keys: {list(technical_data.keys())}")
+        
         for indicator, data in technical_data.items():
-            if 'error' in data:
+            if isinstance(data, dict) and 'error' in data:
                 analysis[indicator] = {"error": data["error"]}
                 continue
                 
@@ -239,31 +268,47 @@ class FinancialAnalyzer:
                 # Convert to DataFrame if applicable
                 if isinstance(data, dict) and "historical" in data:
                     indicator_data = data["historical"]
-                    if indicator_data and isinstance(indicator_data, list):
+                    # Print more debug info
+                    print(f"Indicator data for {indicator}: {indicator_data[:2] if indicator_data else []}")
+                    
+                    if indicator_data and isinstance(indicator_data, list) and len(indicator_data) > 0:
                         df = pd.DataFrame(indicator_data)
                         df = clean_and_convert_numeric(df)
                         
                         # Get recent values
                         recent_values = df.head()
                         
-                        # Calculate average
-                        value_col = next((col for col in df.columns if col not in ['date', 'symbol']), None)
-                        avg_value = df[value_col].mean() if value_col else None
-                        
-                        analysis[indicator] = {
-                            "latest_value": float(recent_values[value_col].iloc[0]) if value_col else None,
-                            "average_value": float(avg_value) if avg_value is not None else None,
-                            "recent_trend": "up" if len(recent_values) > 1 and 
-                                             value_col and 
-                                             recent_values[value_col].iloc[0] > recent_values[value_col].iloc[-1] 
-                                          else "down",
-                            "recent_values": convert_numpy_types(recent_values)
-                        }
+                        # Calculate average - fix boolean context issues
+                        # Find the value column (not date or symbol)
+                        value_cols = [col for col in df.columns if col not in ['date', 'symbol']]
+                        if len(value_cols) > 0:
+                            value_col = value_cols[0]
+                            avg_value = df[value_col].mean() if len(df) > 0 else None
+                            
+                            # Ensure there are values to use
+                            if len(recent_values) > 0:
+                                latest_value = float(recent_values[value_col].iloc[0])
+                                trend_direction = "up"
+                                if len(recent_values) > 1:
+                                    trend_direction = "up" if latest_value > float(recent_values[value_col].iloc[-1]) else "down"
+                                    
+                                analysis[indicator] = {
+                                    "latest_value": latest_value,
+                                    "average_value": float(avg_value) if avg_value is not None else None,
+                                    "recent_trend": trend_direction,
+                                    # Convert to dict instead of DataFrame to avoid serialization issues
+                                    "recent_values": convert_numpy_types(recent_values.to_dict('records'))
+                                }
+                            else:
+                                analysis[indicator] = {"error": "No values available"}
+                        else:
+                            analysis[indicator] = {"error": "No value column found"}
                     else:
                         analysis[indicator] = {"error": "No historical data available"}
                 else:
                     analysis[indicator] = {"error": "Invalid data format"}
             except Exception as e:
+                print(f"Error processing {indicator}: {str(e)}")
                 analysis[indicator] = {"error": f"Analysis failed: {str(e)}"}
         
         return self._ensure_json_serializable(analysis)

@@ -549,3 +549,7 @@ TypeError: Object of type Timestamp is not JSON serializable
 2025-03-10 13:25:31,458 - Financial_Analysis_Orchestrator - INFO - Analysis completed for PLTR in 114.90 seconds
 2025-03-10 13:25:31,458 - Financial_Analysis_Orchestrator - INFO - Report saved to /workspaces/financial-analysis-system/reports/PLTR_analysis.md
 2025-03-10 13:25:31,458 - Financial_Analysis_Orchestrator - INFO - Results saved to /workspaces/financial-analysis-system/reports/PLTR_results.json
+2025-03-10 14:05:04,584 - Financial_Analysis_Main - INFO - Starting analysis for MSFT
+2025-03-10 14:05:04,627 - orchestrator - ERROR - Error analyzing MSFT: 'DataCollectionAgent' object has no attribute 'get_company_profile'
+2025-03-10 14:07:58,848 - Financial_Analysis_Main - INFO - Starting analysis for MSFT
+2025-03-10 14:08:00,017 - orchestrator - ERROR - Error analyzing MSFT: 'ResearchAgent' object has no attribute 'create_research_plan'

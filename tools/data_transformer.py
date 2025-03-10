@@ -65,17 +65,37 @@ def clean_and_convert_numeric(df: pd.DataFrame) -> pd.DataFrame:
         except (ValueError, TypeError):
             pass
         
-        # Then try datetime conversion, with explicit error handling
-        try:
-            # Try to parse dates with a specific format first
-            df_clean[col] = pd.to_datetime(df_clean[col], format='%Y-%m-%d')
-        except ValueError:
-            try:
-                # If that fails, try the default parser
-                df_clean[col] = pd.to_datetime(df_clean[col])
-            except (ValueError, TypeError):
-                # Keep as original if both conversions fail
-                pass
+        # Special handling for date columns
+        if 'date' in col.lower() or df_clean[col].dtype == 'object':
+            # Check if the column contains date-like strings
+            if (isinstance(df_clean[col].iloc[0], str) and 
+                ('-' in df_clean[col].iloc[0] or '/' in df_clean[col].iloc[0])):
+                try:
+                    # Store original values before conversion
+                    original_values = df_clean[col].copy()
+                    
+                    # Try to convert to datetime
+                    df_clean[col] = pd.to_datetime(df_clean[col], errors='coerce')
+                    
+                    # Handle invalid dates (NaT values)
+                    mask = pd.isna(df_clean[col])
+                    if mask.any():
+                        # Create a new mixed-type Series
+                        mixed_series = pd.Series(index=df_clean.index, dtype='object')
+                        
+                        # Set valid timestamps
+                        for idx in df_clean.index[~mask]:
+                            mixed_series.iloc[idx] = df_clean.loc[idx, col]
+                            
+                        # Set original strings for invalid dates
+                        for idx in df_clean.index[mask]:
+                            mixed_series.iloc[idx] = original_values.iloc[idx]
+                            
+                        # Replace the column with our mixed series
+                        df_clean[col] = mixed_series
+                except Exception as e:
+                    # Keep original values on error
+                    print(f"Date conversion error: {str(e)}")
     
     return df_clean
 
