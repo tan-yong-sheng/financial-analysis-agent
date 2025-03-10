@@ -1,9 +1,11 @@
 import sys
 import os
 import json
-from typing import List, Dict, Any, Optional
+from typing import List, Dict, Any, Optional, Type
 from openai import OpenAI
 import logging
+from pydantic import BaseModel
+from utils.llm_utils import create_openai_function_schema
 
 # Add project root to path
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
@@ -27,7 +29,7 @@ class BaseAgent:
         self.client = OpenAI(api_key=OPENAI_API_KEY, base_url=base_url) if base_url else OpenAI(api_key=OPENAI_API_KEY)
         self.role = role
         self.name = name
-        self.model = model_name or OPENAI_MODEL
+        self.model_name = model_name or OPENAI_MODEL  # Fix: Changed from self.model to self.model_name
         self.temperature = OPENAI_TEMPERATURE
         self.max_tokens = OPENAI_MAX_TOKENS
         self.memory = []
@@ -36,42 +38,51 @@ class BaseAgent:
             {"role": "system", "content": f"You are {name}, {role}. Always respond with JSON when appropriate."}
         ]
         
-    def _call_llm(self, prompt: str, temperature: Optional[float] = None) -> str:
+    def _call_llm(self, prompt: str, response_model: Optional[Type[BaseModel]] = None, use_structured_output: bool = False):
         """
-        Call the OpenAI API with a prompt.
+        Call LLM with prompt and return the response.
         
         Args:
-            prompt (str): The prompt to send to the LLM.
-            temperature (float, optional): Override default temperature if specified.
-        
-        Returns:
-            str: The response from the LLM.
-        """
-        self.conversation_memory.append({"role": "user", "content": prompt})
-        
-        # Limit memory size
-        if len(self.conversation_memory) > self.memory_limit + 1:  # +1 for system message
-            # Keep system message and recent messages
-            self.conversation_memory = [
-                self.conversation_memory[0], 
-                *self.conversation_memory[-(self.memory_limit):]
-            ]
+            prompt: The prompt to send to the LLM
+            response_model: Optional Pydantic model to format response as structured JSON
+            use_structured_output: Whether to use OpenAI's function calling for structured output
             
-        try:
-            response = self.client.chat.completions.create(
-                model=self.model,
-                messages=self.conversation_memory,
-                temperature=temperature if temperature is not None else self.temperature,
-                max_tokens=self.max_tokens
+        Returns:
+            str: The LLM response
+        """
+        messages = [
+            {"role": "system", "content": f"You are {self.role}."},
+            {"role": "user", "content": prompt}
+        ]
+        
+        if use_structured_output and response_model:
+            # Create function schema for structured output
+            function_schema = create_openai_function_schema(
+                model_class=response_model,
+                name="generate_structured_response", 
+                description="Generate a structured response according to the specified format"
             )
             
-            message_content = response.choices[0].message.content
-            self.conversation_memory.append({"role": "assistant", "content": message_content})
-            return message_content
-        except Exception as e:
-            error_msg = f"Error calling LLM: {str(e)}"
-            logger.error(error_msg)
-            return json.dumps({"error": error_msg})
+            # Call OpenAI with function calling
+            response = self.client.chat.completions.create(
+                model=self.model_name,
+                messages=messages,
+                functions=[function_schema],
+                function_call={"name": "generate_structured_response"}
+            )
+            
+            # Extract the JSON response from function call
+            function_call = response.choices[0].message.function_call
+            if function_call and function_call.arguments:
+                return function_call.arguments
+        else:
+            # Regular LLM call without structured output
+            response = self.client.chat.completions.create(
+                model=self.model_name,
+                messages=messages
+            )
+            
+            return response.choices[0].message.content
     
     def process(self, input_data: Any) -> Any:
         """

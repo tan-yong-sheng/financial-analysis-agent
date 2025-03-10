@@ -1,13 +1,17 @@
 import sys
 import os
 import json
+import re
 from typing import Dict, Any, List
 import logging
 
 # Add project root to path
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+
 from agents.base_agent import BaseAgent
 from config import MAX_SEARCH_RESULTS, MAX_RESEARCH_DEPTH, SERPAPI_API_KEY
+from utils.llm_utils import parse_llm_json_response, parse_and_validate_llm_response, parse_list_response
+from models.research_models import ResearchPlan, ArticleContent, SearchResult, ResearchAnalysis
 
 logger = logging.getLogger(__name__)
 
@@ -70,16 +74,36 @@ class ResearchAgent(BaseAgent):
         
         try:
             response = self._call_llm(prompt)
-            research_plan = json.loads(response)
             
-            # Add the ticker and company name to the research plan
+            # Create default structure with ticker and company
+            default_plan = {
+                "ticker": ticker,
+                "company_name": company_name,
+                "key_areas": ["financial_performance", "market_position", "industry_trends", "risks"],
+                "metrics": ["revenue_growth", "profit_margins", "debt_to_equity", "return_on_equity"],
+                "competitors": [],
+                "industry_factors": [],
+                "questions": ["What is the company's financial health?", 
+                            "How does it compare to competitors?",
+                            "What are the key risks and opportunities?"],
+                "research_sources": ["financial_statements", "news_articles", "analyst_reports"]
+            }
+            
+            # Use our utility for robust JSON parsing with fallback
+            research_plan = parse_llm_json_response(
+                response,
+                default_structure=default_plan,
+                logger_name="ResearchAgent.create_research_plan"
+            )
+            
+            # Make sure ticker and company name are included
             research_plan["ticker"] = ticker
             research_plan["company_name"] = company_name
             
             return research_plan
-        except json.JSONDecodeError as e:
-            logger.error(f"Error parsing research plan response: {str(e)}")
-            # Return a basic research plan if parsing fails
+            
+        except Exception as e:
+            logger.error(f"Error creating research plan: {str(e)}")
             return {
                 "ticker": ticker,
                 "company_name": company_name,
@@ -118,10 +142,27 @@ class ResearchAgent(BaseAgent):
         
         try:
             response = self._call_llm(prompt)
-            search_results = json.loads(response)
-            return search_results[:num_results]
-        except json.JSONDecodeError as e:
-            logger.error(f"Error parsing search results: {str(e)}")
+            
+            # Use our list parser utility
+            search_results = parse_list_response(
+                response,
+                item_model=SearchResult,
+                default_items=[{"error": "Failed to parse search results"}],
+                logger_name="ResearchAgent.search_web"
+            )
+            
+            # Convert Pydantic models to dicts if needed and take only the requested number
+            results_as_dicts = []
+            for item in search_results[:num_results]:
+                if hasattr(item, "model_dump"):
+                    results_as_dicts.append(item.model_dump())
+                else:
+                    results_as_dicts.append(item)
+                    
+            return results_as_dicts
+            
+        except Exception as e:
+            logger.error(f"Error in search_web: {str(e)}")
             return [{"error": f"Failed to get search results: {str(e)}"}]
 
     def extract_article_content(self, url: str) -> Dict[str, Any]:
@@ -152,10 +193,21 @@ class ResearchAgent(BaseAgent):
         
         try:
             response = self._call_llm(prompt)
-            content = json.loads(response)
+            
+            # Use our validation utility with the ArticleContent model
+            content = parse_and_validate_llm_response(
+                response,
+                model_class=ArticleContent,
+                logger_name="ResearchAgent.extract_article_content"
+            )
+            
+            # Convert to dict if it's a Pydantic model
+            if hasattr(content, "model_dump"):
+                return content.model_dump()
             return content
-        except json.JSONDecodeError as e:
-            logger.error(f"Error parsing article content: {str(e)}")
+            
+        except Exception as e:
+            logger.error(f"Error extracting article content: {str(e)}")
             return {"error": f"Failed to extract content: {str(e)}"}
 
     def conduct_research(self, research_plan: Dict[str, Any], depth: int = MAX_RESEARCH_DEPTH) -> Dict[str, Any]:
@@ -182,7 +234,7 @@ class ResearchAgent(BaseAgent):
             "risk_factors": []
         }
         
-        # Get company overview - Fix the logic issue in the condition
+        # Get company overview
         company_query = f"{company_name} {ticker} company overview financial"
         company_results = self.search_web(company_query, 3)
         if company_results and isinstance(company_results[0], dict) and "error" not in company_results[0]:
@@ -221,7 +273,7 @@ class ResearchAgent(BaseAgent):
             comp_results = self.search_web(comp_query, 2)
             if comp_results and isinstance(comp_results[0], dict) and "link" in comp_results[0]:
                 findings["market_position"] = self.extract_article_content(comp_results[0]["link"])
-        
+                
         return findings
         
     def analyze_research_findings(self, research_findings: Dict[str, Any], research_plan: Dict[str, Any]) -> Dict[str, Any]:
@@ -261,7 +313,30 @@ class ResearchAgent(BaseAgent):
         
         try:
             response = self._call_llm(prompt)
-            analysis = json.loads(response)
+            
+            # Default structure for analysis
+            default_analysis = {
+                "market_trends": ["Unable to extract market trends from the analysis"],
+                "competitive_position": "Analysis failed to produce structured results",
+                "risks_opportunities": {
+                    "risks": ["Data parsing error"],
+                    "opportunities": ["Data parsing error"]
+                },
+                "recent_events": ["No events could be extracted from the analysis"],
+                "industry_outlook": "Unable to determine industry outlook from the analysis"
+            }
+            
+            # Use our validation utility with ResearchAnalysis model
+            analysis_result = parse_and_validate_llm_response(
+                response,
+                model_class=ResearchAnalysis,
+                logger_name="ResearchAgent.analyze_research_findings"
+            )
+            
+            # Convert to dict if it's a Pydantic model
+            analysis = analysis_result
+            if hasattr(analysis_result, "model_dump"):
+                analysis = analysis_result.model_dump()
             
             # Combine with original findings for a complete research package
             return {
@@ -270,7 +345,8 @@ class ResearchAgent(BaseAgent):
                 "raw_findings": research_findings,
                 "analysis": analysis
             }
-        except json.JSONDecodeError as e:
+            
+        except Exception as e:
             logger.error(f"Error parsing research analysis: {str(e)}")
             return {
                 "ticker": ticker,

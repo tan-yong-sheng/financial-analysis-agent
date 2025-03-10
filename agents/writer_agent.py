@@ -145,6 +145,7 @@ class WriterAgent(BaseAgent):
           - Use bullet points (- item) for lists
           - Use tables where appropriate for comparing data
           - Use markdown for any links: [text](url)
+        Please fix your report if you found it isn't in proper markdown format
         
         Do not preface the content with section labels. Write the section as if it's part of a complete report.
         """

@@ -81,18 +81,42 @@ class DataCollectionAgent(BaseAgent):
             logger.error(f"Error fetching cash flow statement for {ticker}: {str(e)}")
             return [{"error": f"Failed to fetch cash flow statement: {str(e)}"}]
     
-    def get_technical_indicators(self, ticker: str) -> Dict[str, Any]:
-        """Get technical indicators data."""
+    def get_technical_indicators(self, ticker: str, indicator_name: str = None, time_period: int = 14) -> Dict[str, Any]:
+        """
+        Get technical indicators data.
+        
+        Args:
+            ticker (str): The ticker symbol
+            indicator_name (str, optional): Specific indicator to fetch
+            time_period (int, optional): Time period for the indicator
+            
+        Returns:
+            dict: Technical indicators data
+        """
         indicators = {}
+        
+        # If a specific indicator is requested
+        if indicator_name:
+            try:
+                url = f"{self.base_url}/technical_indicator/{ticker}/1day/{indicator_name}?apikey={self.api_key}&timePeriod={time_period}"
+                response = requests.get(url)
+                response.raise_for_status()
+                return {"historical": response.json()}
+            except requests.exceptions.RequestException as e:
+                logger.error(f"Error fetching {indicator_name} for {ticker}: {str(e)}")
+                return {"error": f"Failed to fetch {indicator_name}: {str(e)}"}
+        
+        # If no specific indicator, fetch all from config
         for indicator in TECHNICAL_INDICATORS:
             try:
-                url = f"{self.base_url}/technical_indicator/{ticker}/1day/{indicator}?apikey={self.api_key}"
+                url = f"{self.base_url}/technical_indicator/{ticker}/1day/{indicator}?apikey={self.api_key}&timePeriod={time_period}"
                 response = requests.get(url)
                 response.raise_for_status()
                 indicators[indicator] = {"historical": response.json()}
             except requests.exceptions.RequestException as e:
                 logger.error(f"Error fetching {indicator} for {ticker}: {str(e)}")
                 indicators[indicator] = {"error": f"Failed to fetch {indicator}: {str(e)}"}
+        
         return indicators
     
     def collect_financial_data(self, ticker: str) -> Dict[str, Any]:
