@@ -24,6 +24,8 @@ class StructuredLogger:
         if "timestamp" not in log_data:
             log_data["timestamp"] = time.time()
             
+        # Pass the JSON string as the message to the logger
+        # Don't pass kwargs directly to log() method
         self.logger.log(level, json.dumps(log_data))
     
     def info(self, message, **kwargs):
@@ -74,7 +76,10 @@ def monitor_agent_method(logger_name: str = None):
         def wrapper(self, *args, **kwargs):
             method_name = func.__name__
             agent_name = getattr(self, 'name', self.__class__.__name__)
-            logger_instance = logging.getLogger(logger_name or f"{agent_name}.{method_name}")
+            logger_name_to_use = logger_name or f"{agent_name}.{method_name}"
+            
+            # Create a structured logger instead of a standard one
+            logger_instance = StructuredLogger(logger_name_to_use)
             
             # Create a clean dict of args for logging (avoid large objects)
             safe_args = {}
