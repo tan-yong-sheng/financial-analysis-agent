@@ -1,22 +1,140 @@
 import sys
 import os
 import json
+import requests
 from typing import Dict, Any, List, Optional
+import logging
 
 # Add project root to path
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from agents.base_agent import BaseAgent
-from modules.data_collector import FinancialDataCollector
-from config import DEFAULT_PERIOD, DEFAULT_LIMIT, TECHNICAL_INDICATORS
+from config import FMP_API_KEY, FMP_BASE_URL, DEFAULT_PERIOD, DEFAULT_LIMIT, TECHNICAL_INDICATORS
+from tools.data_transformer import clean_and_convert_numeric, convert_numpy_types
+
+logger = logging.getLogger(__name__)
 
 class DataCollectionAgent(BaseAgent):
-    """Agent responsible for collecting financial data."""
+    """Agent responsible for collecting financial data from various sources."""
     
     def __init__(self, base_url: str = None, model_name: str = None):
-        role = "a financial data collection specialist that gathers accurate financial information"
-        super().__init__(role, "Data Collection", base_url=base_url, model_name=model_name)
-        self.collector = FinancialDataCollector()
+        """Initialize data collection agent."""
+        role = "a data collection specialist that gathers financial data from various sources"
+        super().__init__(role, "Data Collector", base_url=base_url, model_name=model_name)
+        self.api_key = FMP_API_KEY
+        self.base_url = FMP_BASE_URL
+    
+    def get_company_profile(self, ticker: str) -> Dict[str, Any]:
+        """
+        Get company profile information.
         
+        Args:
+            ticker (str): Company ticker symbol
+            
+        Returns:
+            dict: Company profile data
+        """
+        try:
+            url = f"{self.base_url}/profile/{ticker}?apikey={self.api_key}"
+            response = requests.get(url)
+            response.raise_for_status()
+            profile_data = response.json()
+            
+            if not profile_data or not isinstance(profile_data, list) or len(profile_data) == 0:
+                logger.warning(f"No profile data found for {ticker}")
+                return {"error": f"No company profile found for {ticker}"}
+                
+            return profile_data[0]  # FMP returns a list with one item
+        except requests.exceptions.RequestException as e:
+            logger.error(f"Error fetching company profile for {ticker}: {str(e)}")
+            return {"error": f"Failed to fetch company profile: {str(e)}"}
+    
+    def get_income_statement(self, ticker: str, period: str = DEFAULT_PERIOD, limit: int = DEFAULT_LIMIT) -> List[Dict[str, Any]]:
+        """Get income statement data."""
+        try:
+            url = f"{self.base_url}/income-statement/{ticker}?period={period}&limit={limit}&apikey={self.api_key}"
+            response = requests.get(url)
+            response.raise_for_status()
+            return response.json()
+        except requests.exceptions.RequestException as e:
+            logger.error(f"Error fetching income statement for {ticker}: {str(e)}")
+            return [{"error": f"Failed to fetch income statement: {str(e)}"}]
+    
+    def get_balance_sheet(self, ticker: str, period: str = DEFAULT_PERIOD, limit: int = DEFAULT_LIMIT) -> List[Dict[str, Any]]:
+        """Get balance sheet data."""
+        try:
+            url = f"{self.base_url}/balance-sheet-statement/{ticker}?period={period}&limit={limit}&apikey={self.api_key}"
+            response = requests.get(url)
+            response.raise_for_status()
+            return response.json()
+        except requests.exceptions.RequestException as e:
+            logger.error(f"Error fetching balance sheet for {ticker}: {str(e)}")
+            return [{"error": f"Failed to fetch balance sheet: {str(e)}"}]
+    
+    def get_cash_flow(self, ticker: str, period: str = DEFAULT_PERIOD, limit: int = DEFAULT_LIMIT) -> List[Dict[str, Any]]:
+        """Get cash flow statement data."""
+        try:
+            url = f"{self.base_url}/cash-flow-statement/{ticker}?period={period}&limit={limit}&apikey={self.api_key}"
+            response = requests.get(url)
+            response.raise_for_status()
+            return response.json()
+        except requests.exceptions.RequestException as e:
+            logger.error(f"Error fetching cash flow statement for {ticker}: {str(e)}")
+            return [{"error": f"Failed to fetch cash flow statement: {str(e)}"}]
+    
+    def get_technical_indicators(self, ticker: str, indicator_name: str = None, time_period: int = 14) -> Dict[str, Any]:
+        """
+        Get technical indicators data.
+        
+        Args:
+            ticker (str): The ticker symbol
+            indicator_name (str, optional): Specific indicator to fetch
+            time_period (int, optional): Time period for the indicator
+            
+        Returns:
+            dict: Technical indicators data
+        """
+        indicators = {}
+        
+        # If a specific indicator is requested
+        if indicator_name:
+            try:
+                url = f"{self.base_url}/technical_indicator/{ticker}/1day/{indicator_name}?apikey={self.api_key}&timePeriod={time_period}"
+                response = requests.get(url)
+                response.raise_for_status()
+                return {"historical": response.json()}
+            except requests.exceptions.RequestException as e:
+                logger.error(f"Error fetching {indicator_name} for {ticker}: {str(e)}")
+                return {"error": f"Failed to fetch {indicator_name}: {str(e)}"}
+        
+        # If no specific indicator, fetch all from config
+        for indicator in TECHNICAL_INDICATORS:
+            try:
+                url = f"{self.base_url}/technical_indicator/{ticker}/1day/{indicator}?apikey={self.api_key}&timePeriod={time_period}"
+                response = requests.get(url)
+                response.raise_for_status()
+                indicators[indicator] = {"historical": response.json()}
+            except requests.exceptions.RequestException as e:
+                logger.error(f"Error fetching {indicator} for {ticker}: {str(e)}")
+                indicators[indicator] = {"error": f"Failed to fetch {indicator}: {str(e)}"}
+        
+        return indicators
+    
+    def collect_financial_data(self, ticker: str) -> Dict[str, Any]:
+        """Collect comprehensive financial data for a company."""
+        company_profile = self.get_company_profile(ticker)
+        income_statement = self.get_income_statement(ticker)
+        balance_sheet = self.get_balance_sheet(ticker)
+        cash_flow = self.get_cash_flow(ticker)
+        technical_indicators = self.get_technical_indicators(ticker)
+        
+        return {
+            "company_profile": company_profile,
+            "income_statement": income_statement,
+            "balance_sheet": balance_sheet,
+            "cash_flow": cash_flow,
+            "technical_indicators": technical_indicators
+        }
+    
     def determine_data_needs(self, ticker: str, research_plan: Dict[str, Any]) -> Dict[str, Any]:
         """
         Determine what data needs to be collected based on the research plan.
@@ -64,42 +182,34 @@ class DataCollectionAgent(BaseAgent):
             }
     
     def collect_company_data(self, ticker: str, data_plan: Dict[str, Any]) -> Dict[str, Any]:
-        """
-        Collect data for a company based on the data collection plan.
-        
-        Args:
-            ticker (str): The ticker symbol of the company.
-            data_plan (dict): The data collection plan.
-            
-        Returns:
-            dict: Collected financial data.
-        """
+        """Collect data for a company based on the data collection plan."""
         period = data_plan.get("statement_period", DEFAULT_PERIOD)
         limit = data_plan.get("statement_limit", DEFAULT_LIMIT)
         
         collected_data = {
             "ticker": ticker,
-            "company_profile": self.collector.get_company_profile(ticker),
-            "stock_price": self.collector.get_stock_price(ticker)
+            "company_profile": self.get_company_profile(ticker),
+            # Fix: Replace self.collector references with self
+            "stock_price": self.get_stock_price(ticker) if hasattr(self, 'get_stock_price') else None
         }
         
         # Collect financial statements
         statements = data_plan.get("financial_statements", ["income_statement", "balance_sheet", "cash_flow"])
         if "income_statement" in statements:
-            collected_data["income_statement"] = self.collector.get_income_statement(ticker, period, limit)
+            collected_data["income_statement"] = self.get_income_statement(ticker, period, limit)
         if "balance_sheet" in statements:
-            collected_data["balance_sheet"] = self.collector.get_balance_sheet(ticker, period, limit)
+            collected_data["balance_sheet"] = self.get_balance_sheet(ticker, period, limit)
         if "cash_flow" in statements:
-            collected_data["cash_flow"] = self.collector.get_cash_flow(ticker, period, limit)
+            collected_data["cash_flow"] = self.get_cash_flow(ticker, period, limit)
             
-        # Collect ratios and metrics
+        # Fix other collector references
         ratios_metrics = data_plan.get("ratios_and_metrics", [])
         if "key_metrics" in ratios_metrics:
-            collected_data["key_metrics"] = self.collector.get_key_metrics(ticker, period, limit)
+            collected_data["key_metrics"] = self.get_key_metrics(ticker, period, limit) if hasattr(self, 'get_key_metrics') else None
         if "financial_ratios" in ratios_metrics:
-            collected_data["financial_ratios"] = self.collector.get_financial_ratios(ticker, period, limit)
+            collected_data["financial_ratios"] = self.get_financial_ratios(ticker, period, limit) if hasattr(self, 'get_financial_ratios') else None
         if "analyst_estimates" in ratios_metrics:
-            collected_data["analyst_estimates"] = self.collector.get_analyst_estimates(ticker)
+            collected_data["analyst_estimates"] = self.get_analyst_estimates(ticker) if hasattr(self, 'get_analyst_estimates') else None
             
         # Collect technical indicators
         technical_indicators = data_plan.get("technical_indicators", TECHNICAL_INDICATORS)
@@ -112,9 +222,11 @@ class DataCollectionAgent(BaseAgent):
             else:
                 indicator_name = indicator
                 
-            indicators_data[indicator_name] = self.collector.get_technical_indicators(
-                ticker, indicator_name, time_period
-            )
+            # Fix: Replace self.collector with self
+            if hasattr(self, 'get_technical_indicators'):
+                indicators_data[indicator_name] = self.get_technical_indicators(
+                    ticker, indicator_name, time_period
+                )
             
         collected_data["technical_indicators"] = indicators_data
         
@@ -125,8 +237,8 @@ class DataCollectionAgent(BaseAgent):
             for comp_ticker in competitor_tickers:
                 # Collect basic info for competitors
                 competitors_data[comp_ticker] = {
-                    "company_profile": self.collector.get_company_profile(comp_ticker),
-                    "key_metrics": self.collector.get_key_metrics(comp_ticker, period, limit)
+                    "company_profile": self.get_company_profile(comp_ticker),
+                    "key_metrics": self.get_key_metrics(comp_ticker, period, limit) if hasattr(self, 'get_key_metrics') else None
                 }
             collected_data["competitors"] = competitors_data
             
@@ -150,3 +262,46 @@ class DataCollectionAgent(BaseAgent):
         
         data_plan = self.determine_data_needs(ticker, research_plan)
         return self.collect_company_data(ticker, data_plan)
+    def get_stock_price(self, ticker: str) -> Dict[str, Any]:
+        """Get historical stock price data."""
+        try:
+            url = f"{self.base_url}/historical-price-full/{ticker}?apikey={self.api_key}"
+            response = requests.get(url)
+            response.raise_for_status()
+            return response.json()
+        except requests.exceptions.RequestException as e:
+            logger.error(f"Error fetching stock price data for {ticker}: {str(e)}")
+            return {"error": f"Failed to fetch stock price data: {str(e)}"}
+
+    def get_key_metrics(self, ticker: str, period: str = DEFAULT_PERIOD, limit: int = DEFAULT_LIMIT) -> List[Dict[str, Any]]:
+        """Get key company metrics."""
+        try:
+            url = f"{self.base_url}/key-metrics/{ticker}?period={period}&limit={limit}&apikey={self.api_key}"
+            response = requests.get(url)
+            response.raise_for_status()
+            return response.json()
+        except requests.exceptions.RequestException as e:
+            logger.error(f"Error fetching key metrics for {ticker}: {str(e)}")
+            return [{"error": f"Failed to fetch key metrics: {str(e)}"}]
+
+    def get_financial_ratios(self, ticker: str, period: str = DEFAULT_PERIOD, limit: int = DEFAULT_LIMIT) -> List[Dict[str, Any]]:
+        """Get financial ratios."""
+        try:
+            url = f"{self.base_url}/ratios/{ticker}?period={period}&limit={limit}&apikey={self.api_key}"
+            response = requests.get(url)
+            response.raise_for_status()
+            return response.json()
+        except requests.exceptions.RequestException as e:
+            logger.error(f"Error fetching financial ratios for {ticker}: {str(e)}")
+            return [{"error": f"Failed to fetch financial ratios: {str(e)}"}]
+
+    def get_analyst_estimates(self, ticker: str) -> List[Dict[str, Any]]:
+        """Get analyst estimates."""
+        try:
+            url = f"{self.base_url}/analyst-estimates/{ticker}?apikey={self.api_key}"
+            response = requests.get(url)
+            response.raise_for_status()
+            return response.json()
+        except requests.exceptions.RequestException as e:
+            logger.error(f"Error fetching analyst estimates for {ticker}: {str(e)}")
+            return [{"error": f"Failed to fetch analyst estimates: {str(e)}"}]

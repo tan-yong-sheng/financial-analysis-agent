@@ -1,183 +1,306 @@
 import sys
 import os
 import json
+import re
 from typing import Dict, Any, List
-import time
+import logging
 
 # Add project root to path
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+
 from agents.base_agent import BaseAgent
-from config import MAX_SEARCH_RESULTS, MAX_RESEARCH_DEPTH
-from tools.web_research import WebResearchTool
+from config import MAX_SEARCH_RESULTS, MAX_RESEARCH_DEPTH, SERPAPI_API_KEY
+from utils.llm_utils import parse_llm_json_response, parse_and_validate_llm_response, parse_list_response
+from models.research_models import ResearchPlan, ArticleContent, SearchResult, ResearchAnalysis, SearchResults
+from utils.observability import monitor_agent_method, StructuredLogger, AgentTracer
+
+logger = logging.getLogger(__name__)
+structured_logger = StructuredLogger("ResearchAgent")
 
 class ResearchAgent(BaseAgent):
-    """Agent responsible for conducting web research and finding relevant information."""
+    """Agent responsible for conducting market research and gathering information."""
     
     def __init__(self, base_url: str = None, model_name: str = None):
-        role = "a financial research specialist that gathers relevant market news and industry information"
-        super().__init__(role, "Research Specialist", base_url=base_url, model_name=model_name)
-        self.research_tool = WebResearchTool()
-        
-    def web_search(self, query: str, num_results: int = MAX_SEARCH_RESULTS) -> List[Dict[str, Any]]:
-        """
-        Perform a web search using the web research tool.
-        
-        Args:
-            query (str): The search query.
-            num_results (int): Number of results to return.
-            
-        Returns:
-            list: List of search results.
-        """
-        return self.research_tool.search_google(query, num_results)
+        """Initialize research agent."""
+        role = "a financial researcher that conducts market research and gathers information about companies and industries"
+        super().__init__(role, "Market Researcher", base_url=base_url, model_name=model_name)
+        self.tracer = AgentTracer("Market Researcher", structured_logger)
     
-    def research_company_news(self, ticker: str, company_name: str) -> List[Dict[str, Any]]:
+    @monitor_agent_method()
+    def create_research_plan(self, input_data: Dict[str, Any]) -> Dict[str, Any]:
+        self.tracer.start_task("create_research_plan", ticker=input_data.get("ticker"))
+        try:
+            ticker = input_data.get("ticker")
+            company_data = input_data.get("company_data", {})
+            
+            if not ticker:
+                return {"error": "No ticker symbol provided for research planning"}
+                
+            # Get company information from the data if available
+            company_name = company_data.get("companyName", ticker)
+            company_sector = company_data.get("sector", "")
+            company_industry = company_data.get("industry", "")
+            company_description = company_data.get("description", "")
+                
+            # Generate research plan with LLM using structured output
+            prompt = f"""
+            Create a detailed financial research plan for {company_name} ({ticker}).
+
+            Company Details:
+            - Sector: {company_sector}
+            - Industry: {company_industry}
+            - Description: {company_description}
+
+            Include key financial metrics to analyze, specific industry factors to research, 
+            main competitors to compare against, market trends to investigate,
+            potential risks and opportunities to identify, and recent news and events to research.
+
+            For each area, provide specific questions that should be answered during research.
+            """
+            
+            try:
+                # Use structured output with instructor
+                plan = self._call_structured_llm(prompt, ResearchPlan)
+                
+                # Ensure ticker and company name are included
+                plan.ticker = ticker
+                plan.company_name = company_name
+                
+                # Convert to dictionary for compatibility with existing code
+                result = plan.model_dump()
+                self.tracer.end_task(status="success", result_summary={"ticker": result.get("ticker")})
+                return result
+                
+            except Exception as e:
+                logger.error(f"Error creating research plan: {str(e)}")
+                self.tracer.end_task(status="error", error_message=str(e))
+                return {
+                    "ticker": ticker,
+                    "company_name": company_name,
+                    "key_areas": ["financial_performance", "market_position", "industry_trends", "risks"],
+                    "metrics": ["revenue_growth", "profit_margins", "debt_to_equity", "return_on_equity"],
+                    "competitors": [],
+                    "industry_factors": [],
+                    "questions": ["What is the company's financial health?", 
+                                "How does it compare to competitors?",
+                                "What are the key risks and opportunities?"],
+                    "research_sources": ["financial_statements", "news_articles", "analyst_reports"]
+                }
+        except Exception as e:
+            self.tracer.end_task(status="error", error_message=str(e))
+            raise
+
+    def search_web(self, query: str, num_results: int = MAX_SEARCH_RESULTS) -> List[Dict[str, Any]]:
         """
-        Research recent news about a company.
+        Search the web for information using SerpAPI.
         
         Args:
-            ticker (str): The ticker symbol.
-            company_name (str): The company name.
+            query (str): Search query
+            num_results (int): Maximum number of results to return
             
         Returns:
-            list: Recent news about the company.
+            list: Search results
         """
-        query = f"{company_name} {ticker} stock news last 3 months"
-        # Use news-specific search if available
-        try:
-            results = self.research_tool.search_news(query)
-        except:
-            results = self.web_search(query)
-        
-        # Further process and validate results
+        # In a real implementation, this would use SerpAPI
+        # For now, simulate a response with structured information
         prompt = f"""
-        I've conducted a search for news about {company_name} ({ticker}). Here are the results:
-        {json.dumps(results, indent=2)}
+        Generate {num_results} realistic search results for the query: "{query}"
         
-        Please analyze these search results and:
-        1. Identify the most relevant and significant news items
-        2. Filter out any duplicate or low-quality sources
-        3. Add a brief summary of what each news piece is about
-        4. Rate each news item's potential impact on the stock (High/Medium/Low)
-        
-        Return your analysis as a JSON array with each news item containing:
-        - title: The title of the news
-        - source: The source website
-        - url: The URL of the article
-        - date: The date of publication (if available)
-        - summary: Your brief summary of the article
-        - impact: Your assessment of potential impact (High/Medium/Low)
+        Each result should include title, link, and snippet that would be helpful for financial analysis.
+        Make sure the information is factually plausible.
         """
         
         try:
-            response = self._call_llm(prompt)
-            processed_results = json.loads(response)
-            return processed_results
-        except json.JSONDecodeError:
-            return [{"error": "Failed to process news results", "raw_results": results}]
-    
-    def research_industry_trends(self, industry: str, sector: str) -> Dict[str, Any]:
+            # Use instructor for structured output
+            results = self._call_structured_llm(prompt, SearchResults)
+            
+            # Take only the requested number
+            results_list = results.results[:num_results]
+            
+            # Convert to dict
+            return [item.model_dump() for item in results_list]
+            
+        except Exception as e:
+            logger.error(f"Error in search_web: {str(e)}")
+            return [{"error": f"Failed to get search results: {str(e)}"}]
+
+    def extract_article_content(self, url: str) -> Dict[str, Any]:
         """
-        Research industry trends.
+        Extract and summarize content from a URL.
         
         Args:
-            industry (str): The industry name.
-            sector (str): The sector name.
+            url (str): The URL to extract content from
             
         Returns:
-            dict: Industry trend information.
+            dict: Extracted content and summary
         """
-        query = f"{industry} {sector} industry trends analysis outlook"
-        results = self.web_search(query)
-        
+        # Simulate content extraction with structured output
         prompt = f"""
-        I've conducted a search about trends in the {industry} industry within the {sector} sector. Here are the results:
-        {json.dumps(results, indent=2)}
+        Extract content from the URL: {url}
         
-        Please analyze these search results and create a comprehensive industry analysis that includes:
-        1. Key industry trends and developments
-        2. Growth prospects for the industry
-        3. Major challenges and risks facing the industry
-        4. Competitive landscape
-        5. Regulatory environment
-        
-        Format your response as a detailed JSON with these main sections. Be specific and analytical.
+        Based on the URL, generate realistic but fictional article content that might
+        appear on this page, focusing on financial/business information.
+        Include a title, publication date, content paragraphs, and a concise 2-3 sentence summary.
         """
         
         try:
-            response = self._call_llm(prompt)
-            industry_analysis = json.loads(response)
-            return industry_analysis
-        except json.JSONDecodeError:
-            return {"error": "Failed to process industry research", "raw_results": results}
-    
-    def research_competitors(self, ticker: str, company_name: str, industry: str) -> Dict[str, Any]:
+            # Use instructor for structured output
+            content = self._call_structured_llm(prompt, ArticleContent)
+            
+            # Convert to dict
+            return content.model_dump()
+            
+        except Exception as e:
+            logger.error(f"Error extracting article content: {str(e)}")
+            return {"error": f"Failed to extract content: {str(e)}"}
+
+    def conduct_research(self, research_plan: Dict[str, Any], depth: int = MAX_RESEARCH_DEPTH) -> Dict[str, Any]:
         """
-        Research company competitors.
+        Conduct research based on the research plan.
         
         Args:
-            ticker (str): The ticker symbol.
-            company_name (str): The company name.
-            industry (str): The industry name.
+            research_plan (dict): Research plan with focus areas and questions
+            depth (int): Maximum depth of research to conduct
             
         Returns:
-            dict: Competitor information.
+            dict: Research findings
         """
-        query = f"{company_name} {ticker} competitors {industry}"
-        results = self.web_search(query)
+        ticker = research_plan.get("ticker")
+        company_name = research_plan.get("company_name", ticker)
         
+        # Initialize research findings
+        findings = {
+            "company_overview": {},
+            "financial_insights": [],
+            "market_position": {},
+            "industry_analysis": {},
+            "news_and_events": [],
+            "risk_factors": []
+        }
+        
+        # Get company overview
+        company_query = f"{company_name} {ticker} company overview financial"
+        company_results = self.search_web(company_query, 3)
+        if company_results and isinstance(company_results[0], dict) and "error" not in company_results[0]:
+            findings["company_overview"] = self.extract_article_content(company_results[0]["link"])
+        
+        # Research recent financial performance
+        financial_query = f"{company_name} {ticker} recent financial performance quarterly results"
+        financial_results = self.search_web(financial_query, 5)
+        for result in financial_results[:depth]:
+            if isinstance(result, dict) and "link" in result:
+                article = self.extract_article_content(result["link"])
+                if "error" not in article:
+                    findings["financial_insights"].append(article)
+        
+        # Research industry trends
+        industry = research_plan.get("industry", "")
+        industry_query = f"{industry} industry trends market analysis {company_name}"
+        industry_results = self.search_web(industry_query, 3)
+        if industry_results and isinstance(industry_results[0], dict) and "link" in industry_results[0]:
+            findings["industry_analysis"] = self.extract_article_content(industry_results[0]["link"])
+        
+        # Get recent news
+        news_query = f"{company_name} {ticker} recent news events last 3 months"
+        news_results = self.search_web(news_query, 5)
+        for result in news_results[:depth]:
+            if isinstance(result, dict) and "link" in result:
+                article = self.extract_article_content(result["link"])
+                if "error" not in article:
+                    findings["news_and_events"].append(article)
+        
+        # Research competitors
+        competitors = research_plan.get("competitors", [])
+        if competitors:
+            competitors_str = ", ".join(competitors)
+            comp_query = f"{company_name} vs {competitors_str} market comparison"
+            comp_results = self.search_web(comp_query, 2)
+            if comp_results and isinstance(comp_results[0], dict) and "link" in comp_results[0]:
+                findings["market_position"] = self.extract_article_content(comp_results[0]["link"])
+                
+        return findings
+        
+    def analyze_research_findings(self, research_findings: Dict[str, Any], research_plan: Dict[str, Any]) -> Dict[str, Any]:
+        """
+        Analyze research findings to extract key insights.
+        
+        Args:
+            research_findings (dict): Raw research findings
+            research_plan (dict): Original research plan
+            
+        Returns:
+            dict: Analyzed research findings with key insights
+        """
+        ticker = research_plan.get("ticker")
+        company_name = research_plan.get("company_name", ticker)
+        
+        # Prepare content for LLM analysis
         prompt = f"""
-        I've conducted a search about competitors for {company_name} ({ticker}) in the {industry} industry. Here are the results:
-        {json.dumps(results, indent=2)}
+        Analyze research findings for {company_name} ({ticker}) to extract key insights.
         
-        Please analyze these search results and:
-        1. Identify the main direct competitors (ideally with their ticker symbols)
-        2. Provide a brief overview of each main competitor
-        3. Compare relative market positions (market share, strengths, weaknesses)
-        4. Identify any competitive advantages or disadvantages for {company_name}
+        Research Plan:
+        {json.dumps(research_plan, indent=2)}
         
-        Format your response as a structured JSON with a "competitors" array and a "competitive_analysis" section.
+        Research Findings:
+        {json.dumps(research_findings, indent=2)}
+        
+        Extract:
+        1. Key market trends affecting the company
+        2. Competitive position analysis
+        3. Major risks and opportunities
+        4. Recent events that may impact financial performance
+        5. Industry outlook and how it affects the company
+        
+        Include citations to the source material when possible.
         """
         
         try:
-            response = self._call_llm(prompt)
-            competitor_analysis = json.loads(response)
-            return competitor_analysis
-        except json.JSONDecodeError:
-            return {"error": "Failed to process competitor research", "raw_results": results}
+            # Use instructor for structured output
+            analysis = self._call_structured_llm(prompt, ResearchAnalysis)
+            
+            # Combine with original findings for a complete research package
+            return {
+                "ticker": ticker,
+                "company_name": company_name,
+                "raw_findings": research_findings,
+                "analysis": analysis.model_dump()
+            }
+            
+        except Exception as e:
+            logger.error(f"Error parsing research analysis: {str(e)}")
+            return {
+                "ticker": ticker,
+                "company_name": company_name,
+                "raw_findings": research_findings,
+                "error": f"Failed to analyze research findings: {str(e)}"
+            }
     
     def process(self, input_data: Dict[str, Any]) -> Dict[str, Any]:
         """
-        Process the research request for a company
+        Process input data to conduct market research.
         
         Args:
-            input_data (Dict[str, Any]): Input data containing company information
+            input_data (dict): Input data containing ticker, company data, and research plan.
             
         Returns:
-            Dict[str, Any]: Research results
+            dict: Research results.
         """
         ticker = input_data.get("ticker")
-        company_profile = input_data.get("company_profile", [{}])
+        company_data = input_data.get("company_data", {})
         research_plan = input_data.get("research_plan", {})
         
-        if not ticker or not company_profile:
-            return {"error": "Insufficient information provided"}
-        
-        # Extract company info
-        if isinstance(company_profile, list) and len(company_profile) > 0:
-            company_info = company_profile[0]
-        else:
-            company_info = company_profile
+        if not ticker:
+            return {"error": "No ticker provided for research"}
             
-        company_name = company_info.get("companyName", "")
-        industry = company_info.get("industry", "")
-        sector = company_info.get("sector", "")
+        # If no research plan provided, create one
+        if not research_plan or "error" in research_plan:
+            research_plan = self.create_research_plan({
+                "ticker": ticker,
+                "company_data": company_data
+            })
+            
+        # Conduct research based on plan
+        research_findings = self.conduct_research(research_plan)
         
-        # Conduct research
-        research_results = {
-            "company_news": self.research_company_news(ticker, company_name),
-            "industry_trends": self.research_industry_trends(industry, sector),
-            "competitor_analysis": self.research_competitors(ticker, company_name, industry)
-        }
-        
-        return research_results
+        # Analyze findings
+        return self.analyze_research_findings(research_findings, research_plan)

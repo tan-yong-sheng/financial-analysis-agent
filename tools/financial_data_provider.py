@@ -223,3 +223,77 @@ class FinancialDataProvider:
         return self._make_request(f"{endpoint}/{ticker}", {
             "period": time_period
         })
+
+    def get_technical_indicator(self, ticker: str, indicator: str, time_period: int = 14) -> List[Dict[str, Any]]:
+        """
+        Get technical indicator data from Financial Modeling Prep API.
+        
+        Args:
+            ticker (str): Company ticker symbol
+            indicator (str): Indicator type ('rsi', 'macd', 'sma', 'ema')
+            time_period (int): Time period for indicator calculation
+            
+        Returns:
+            list: Technical indicator data
+        """
+        indicator = indicator.lower()
+        
+        # Map indicator names to their proper types
+        indicator_types = {
+            "sma": "sma",
+            "ema": "ema",
+            "wma": "wma",
+            "rsi": "rsi",
+            "macd": "macd"
+        }
+        
+        if indicator not in indicator_types:
+            logger.warning(f"Unsupported indicator: {indicator}")
+            return []
+            
+        try:
+            # All technical indicators use the same endpoint structure
+            endpoint = "technical-indicator/daily"
+            params = {
+                "symbol": ticker,
+                "type": indicator_types[indicator],
+            }
+            
+            # Add period parameter for indicators that need it
+            if indicator in ["sma", "ema", "wma", "rsi"]:
+                params["period"] = time_period
+                
+            response = self._make_request(f"{endpoint}/{ticker}", params)
+            
+            # Check for valid response
+            if isinstance(response, dict):
+                if "error" in response:
+                    logger.error(f"API error for {indicator} on {ticker}: {response['error']}")
+                    return []
+                    
+                return response.get("technicalIndicator", [])
+            elif isinstance(response, list):
+                return response
+            else:
+                logger.warning(f"Unexpected response format for {indicator} on {ticker}")
+                return []
+                
+        except Exception as e:
+            logger.error(f"Error fetching {indicator} for {ticker}: {str(e)}")
+            return []
+
+    def check_api_status(self) -> Dict[str, Any]:
+        """
+        Check the status of the API key to identify quota issues.
+        
+        Returns:
+            dict: API status information
+        """
+        try:
+            endpoint = "status"
+            response = self._make_request(endpoint)
+            logger.info(f"API Status check result: {response}")
+            return response
+        except Exception as e:
+            logger.error(f"Error checking API status: {str(e)}")
+            return {"error": str(e)}
