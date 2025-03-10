@@ -182,10 +182,10 @@ class ResearchAgent(BaseAgent):
             "risk_factors": []
         }
         
-        # Get company overview
+        # Get company overview - Fix the logic issue in the condition
         company_query = f"{company_name} {ticker} company overview financial"
         company_results = self.search_web(company_query, 3)
-        if company_results and not isinstance(company_results[0], dict) or "error" not in company_results[0]:
+        if company_results and isinstance(company_results[0], dict) and "error" not in company_results[0]:
             findings["company_overview"] = self.extract_article_content(company_results[0]["link"])
         
         # Research recent financial performance
