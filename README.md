@@ -1,37 +1,53 @@
-# Financial Analysis Agent System
+# Financial Analysis System
 
-A role-based AI system for comprehensive financial analysis using multiple specialized agents.
+An AI-powered financial analysis tool that automates comprehensive stock research, statement analysis, and report generation.
+
+## Overview
+
+This system provides automated financial analysis by collecting data from financial APIs, analyzing financial statements, processing technical indicators, and generating comprehensive reports. It leverages LLM (Large Language Models) technology to provide qualitative insights alongside quantitative analysis.
 
 ## Features
 
-- Role-based agent architecture for specialized tasks
-- Integration with Financial Modeling Prep API for financial data
-- Web research capabilities using Serper API
-- Interactive candlestick charts using HTML Canvas
-- Comprehensive financial analysis and report generation
-- Fact-checking and citation validation
+- **Comprehensive Financial Analysis**
+  - Income statement analysis (revenue growth, profit margins, etc.)
+  - Balance sheet analysis (liquidity ratios, solvency metrics, etc.)
+  - Cash flow statement analysis (operating cash, free cash flow, etc.)
+  - Technical indicators analysis
 
-## Prerequisites
+- **AI-Powered Insights**
+  - Market research integration
+  - Trend identification
+  - Investment recommendation generation
 
-- Python 3.8+
-- Financial Modeling Prep API key
-- OpenAI API key
-- Serper API key
+- **Report Generation**
+  - Markdown formatted reports
+  - JSON data export
+  - Fact-checked content
 
 ## Installation
 
+### Prerequisites
+
+- Python 3.8+
+- API keys for:
+  - OpenAI (or compatible LLM API)
+  - Financial Modeling Prep
+  - SerpAPI (for web search capabilities)
+
+### Setup
+
 1. Clone the repository:
 ```bash
-git clone <repository-url>
-cd financial-analysis-agent
+git clone https://github.com/yourusername/financial-analysis.git
+cd financial-analysis
 ```
 
-2. Install required packages:
+2. Install the required packages:
 ```bash
 pip install -r requirements.txt
 ```
 
-3. Set up your environment variables in `.env`:
+3. Create a `.env` file with your API keys:
 ```plaintext
 OPENAI_API_KEY=your_openai_api_key
 FMP_API_KEY=your_financial_modeling_prep_api_key
@@ -63,7 +79,7 @@ The system will:
 ## Project Structure
 
 ```
-financial-analysis-agent/
+financial-analysis-system/
 ├── agents/                  # Specialized agent modules
 ├── tools/                   # Utility tools and helpers
 ├── modules/                 # Core functionality modules

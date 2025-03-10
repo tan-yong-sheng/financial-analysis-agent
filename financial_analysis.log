@@ -492,3 +492,60 @@ TypeError: Object of type Timestamp is not JSON serializable
 2025-03-10 13:05:16,175 - Financial_Analysis_Orchestrator - INFO - Analysis completed for AAPL in 118.50 seconds
 2025-03-10 13:05:16,175 - Financial_Analysis_Orchestrator - INFO - Report saved to /workspaces/financial-analysis-system/reports/AAPL_analysis.md
 2025-03-10 13:05:16,176 - Financial_Analysis_Orchestrator - INFO - Results saved to /workspaces/financial-analysis-system/reports/AAPL_results.json
+2025-03-10 13:12:41,115 - Financial_Analysis_Main - INFO - Starting analysis for AAPL
+2025-03-10 13:12:41,116 - Financial_Analysis_Orchestrator - INFO - Initializing Financial Analysis Orchestrator
+2025-03-10 13:12:41,166 - Financial_Analysis_Orchestrator - INFO - Starting analysis for AAPL
+2025-03-10 13:12:41,166 - Financial_Analysis_Orchestrator - INFO - Getting initial company data for planning
+2025-03-10 13:12:45,136 - httpx - INFO - HTTP Request: POST https://litellm.tanyongsheng.site/v1/chat/completions "HTTP/1.1 200 OK"
+2025-03-10 13:12:57,203 - Financial_Analysis_Orchestrator - INFO - Creating research plan
+2025-03-10 13:13:07,074 - httpx - INFO - HTTP Request: POST https://litellm.tanyongsheng.site/v1/chat/completions "HTTP/1.1 200 OK"
+2025-03-10 13:13:07,075 - Financial_Analysis_Orchestrator - INFO - Collecting detailed financial data based on plan
+2025-03-10 13:13:10,691 - httpx - INFO - HTTP Request: POST https://litellm.tanyongsheng.site/v1/chat/completions "HTTP/1.1 200 OK"
+2025-03-10 13:13:22,338 - Financial_Analysis_Orchestrator - INFO - Conducting market and industry research
+2025-03-10 13:13:27,793 - httpx - INFO - HTTP Request: POST https://litellm.tanyongsheng.site/v1/chat/completions "HTTP/1.1 200 OK"
+2025-03-10 13:13:35,499 - httpx - INFO - HTTP Request: POST https://litellm.tanyongsheng.site/v1/chat/completions "HTTP/1.1 200 OK"
+2025-03-10 13:13:43,253 - httpx - INFO - HTTP Request: POST https://litellm.tanyongsheng.site/v1/chat/completions "HTTP/1.1 200 OK"
+2025-03-10 13:13:43,254 - Financial_Analysis_Orchestrator - INFO - Analyzing financial data and integrating with research
+2025-03-10 13:13:51,093 - httpx - INFO - HTTP Request: POST https://litellm.tanyongsheng.site/v1/chat/completions "HTTP/1.1 200 OK"
+2025-03-10 13:13:58,265 - httpx - INFO - HTTP Request: POST https://litellm.tanyongsheng.site/v1/chat/completions "HTTP/1.1 200 OK"
+2025-03-10 13:13:58,266 - Financial_Analysis_Orchestrator - INFO - Writing financial research report
+2025-03-10 13:14:08,180 - httpx - INFO - HTTP Request: POST https://litellm.tanyongsheng.site/v1/chat/completions "HTTP/1.1 200 OK"
+2025-03-10 13:14:11,421 - httpx - INFO - HTTP Request: POST https://litellm.tanyongsheng.site/v1/chat/completions "HTTP/1.1 200 OK"
+2025-03-10 13:14:18,156 - httpx - INFO - HTTP Request: POST https://litellm.tanyongsheng.site/v1/chat/completions "HTTP/1.1 200 OK"
+2025-03-10 13:14:23,092 - httpx - INFO - HTTP Request: POST https://litellm.tanyongsheng.site/v1/chat/completions "HTTP/1.1 200 OK"
+2025-03-10 13:14:23,093 - Financial_Analysis_Orchestrator - INFO - Fact checking and validating the report
+2025-03-10 13:14:27,401 - httpx - INFO - HTTP Request: POST https://litellm.tanyongsheng.site/v1/chat/completions "HTTP/1.1 200 OK"
+2025-03-10 13:14:39,049 - httpx - INFO - HTTP Request: POST https://litellm.tanyongsheng.site/v1/chat/completions "HTTP/1.1 200 OK"
+2025-03-10 13:14:39,208 - Financial_Analysis_Orchestrator - INFO - Analysis completed for AAPL in 118.04 seconds
+2025-03-10 13:14:39,208 - Financial_Analysis_Orchestrator - INFO - Report saved to /workspaces/financial-analysis-system/reports/AAPL_analysis.md
+2025-03-10 13:14:39,208 - Financial_Analysis_Orchestrator - INFO - Results saved to /workspaces/financial-analysis-system/reports/AAPL_results.json
+2025-03-10 13:23:36,505 - Financial_Analysis_Main - INFO - Starting analysis for PLTR
+2025-03-10 13:23:36,505 - Financial_Analysis_Orchestrator - INFO - Initializing Financial Analysis Orchestrator
+2025-03-10 13:23:36,557 - Financial_Analysis_Orchestrator - INFO - Starting analysis for PLTR
+2025-03-10 13:23:36,557 - Financial_Analysis_Orchestrator - INFO - Getting initial company data for planning
+2025-03-10 13:23:39,382 - httpx - INFO - HTTP Request: POST https://litellm.tanyongsheng.site/v1/chat/completions "HTTP/1.1 200 OK"
+2025-03-10 13:23:51,473 - Financial_Analysis_Orchestrator - INFO - Creating research plan
+2025-03-10 13:24:00,132 - httpx - INFO - HTTP Request: POST https://litellm.tanyongsheng.site/v1/chat/completions "HTTP/1.1 200 OK"
+2025-03-10 13:24:00,133 - Financial_Analysis_Orchestrator - INFO - Collecting detailed financial data based on plan
+2025-03-10 13:24:02,774 - httpx - INFO - HTTP Request: POST https://litellm.tanyongsheng.site/v1/chat/completions "HTTP/1.1 200 OK"
+2025-03-10 13:24:14,913 - Financial_Analysis_Orchestrator - INFO - Conducting market and industry research
+2025-03-10 13:24:23,288 - httpx - INFO - HTTP Request: POST https://litellm.tanyongsheng.site/v1/chat/completions "HTTP/1.1 200 OK"
+2025-03-10 13:24:34,541 - httpx - INFO - HTTP Request: POST https://litellm.tanyongsheng.site/v1/chat/completions "HTTP/1.1 200 OK"
+2025-03-10 13:24:46,911 - httpx - INFO - HTTP Request: POST https://litellm.tanyongsheng.site/v1/chat/completions "HTTP/1.1 200 OK"
+2025-03-10 13:24:47,094 - Financial_Analysis_Orchestrator - INFO - Analyzing financial data and integrating with research
+2025-03-10 13:24:47,112 - Financial_Analyzer - ERROR - Error analyzing income statement: The truth value of a DataFrame is ambiguous. Use a.empty, a.bool(), a.item(), a.any() or a.all().
+2025-03-10 13:24:47,126 - Financial_Analyzer - ERROR - Error analyzing balance sheet: The truth value of a DataFrame is ambiguous. Use a.empty, a.bool(), a.item(), a.any() or a.all().
+2025-03-10 13:24:47,136 - Financial_Analyzer - ERROR - Error analyzing cash flow: The truth value of a DataFrame is ambiguous. Use a.empty, a.bool(), a.item(), a.any() or a.all().
+2025-03-10 13:24:52,460 - httpx - INFO - HTTP Request: POST https://litellm.tanyongsheng.site/v1/chat/completions "HTTP/1.1 200 OK"
+2025-03-10 13:25:00,150 - httpx - INFO - HTTP Request: POST https://litellm.tanyongsheng.site/v1/chat/completions "HTTP/1.1 200 OK"
+2025-03-10 13:25:00,151 - Financial_Analysis_Orchestrator - INFO - Writing financial research report
+2025-03-10 13:25:09,254 - httpx - INFO - HTTP Request: POST https://litellm.tanyongsheng.site/v1/chat/completions "HTTP/1.1 200 OK"
+2025-03-10 13:25:12,713 - httpx - INFO - HTTP Request: POST https://litellm.tanyongsheng.site/v1/chat/completions "HTTP/1.1 200 OK"
+2025-03-10 13:25:17,045 - httpx - INFO - HTTP Request: POST https://litellm.tanyongsheng.site/v1/chat/completions "HTTP/1.1 200 OK"
+2025-03-10 13:25:20,887 - httpx - INFO - HTTP Request: POST https://litellm.tanyongsheng.site/v1/chat/completions "HTTP/1.1 200 OK"
+2025-03-10 13:25:20,888 - Financial_Analysis_Orchestrator - INFO - Fact checking and validating the report
+2025-03-10 13:25:22,553 - httpx - INFO - HTTP Request: POST https://litellm.tanyongsheng.site/v1/chat/completions "HTTP/1.1 200 OK"
+2025-03-10 13:25:31,445 - httpx - INFO - HTTP Request: POST https://litellm.tanyongsheng.site/v1/chat/completions "HTTP/1.1 200 OK"
+2025-03-10 13:25:31,458 - Financial_Analysis_Orchestrator - INFO - Analysis completed for PLTR in 114.90 seconds
+2025-03-10 13:25:31,458 - Financial_Analysis_Orchestrator - INFO - Report saved to /workspaces/financial-analysis-system/reports/PLTR_analysis.md
+2025-03-10 13:25:31,458 - Financial_Analysis_Orchestrator - INFO - Results saved to /workspaces/financial-analysis-system/reports/PLTR_results.json
