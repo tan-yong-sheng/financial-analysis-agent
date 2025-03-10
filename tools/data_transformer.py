@@ -75,7 +75,7 @@ def clean_and_convert_numeric(df: pd.DataFrame) -> pd.DataFrame:
                     original_values = df_clean[col].copy()
                     
                     # Try to convert to datetime
-                    df_clean[col] = pd.to_datetime(df_clean[col], errors='coerce')
+                    df_clean[col] = convert_to_datetime(df_clean, col)
                     
                     # Handle invalid dates (NaT values)
                     mask = pd.isna(df_clean[col])
@@ -98,6 +98,16 @@ def clean_and_convert_numeric(df: pd.DataFrame) -> pd.DataFrame:
                     print(f"Date conversion error: {str(e)}")
     
     return df_clean
+
+def convert_to_datetime(df_clean, col):
+    """Convert column to datetime with appropriate format handling."""
+    # First try with standard formats
+    try:
+        # Try ISO format first (most common in financial data)
+        return pd.to_datetime(df_clean[col], format='%Y-%m-%d', errors='coerce')
+    except:
+        # Fall back to flexible parsing if needed
+        return pd.to_datetime(df_clean[col], errors='coerce')
 
 def dataframe_to_dict(df: pd.DataFrame) -> List[Dict[str, Any]]:
     """Convert DataFrame to list of dicts with serializable types."""

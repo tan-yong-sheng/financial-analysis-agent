@@ -7,6 +7,10 @@ class SearchResult(BaseModel):
     link: str = Field(description="URL of the search result")
     snippet: str = Field(description="Short text excerpt from the search result")
 
+class SearchResults(BaseModel):
+    """Container for search results"""
+    results: List[SearchResult] = Field(description="List of search results", default_factory=list)
+
 class ArticleContent(BaseModel):
     """Model for extracted article content"""
     title: str = Field(description="Article title")

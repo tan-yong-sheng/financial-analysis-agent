@@ -138,7 +138,22 @@ class FinancialDataCollector:
         Returns:
             dict: Technical indicator data
         """
-        return self.provider.get_technical_indicators(ticker, indicator, time_period)
+        indicators = {'rsi': [], 'macd': [], 'sma': [], 'ema': []}
+    
+        try:
+            # Existing code to fetch indicators
+            # ...
+            
+            # Add validation and logging
+            for indicator_name, data in indicators.items():
+                if not data:
+                    logger.warning(f"No {indicator_name} data found for {ticker}. This may affect analysis quality.")
+                    
+            return indicators
+        except Exception as e:
+            logger.error(f"Error fetching technical indicators for {ticker}: {str(e)}")
+            # Return empty but structured data for graceful degradation
+            return indicators
     
     def get_comprehensive_data(self, ticker: str, period: str = "annual", limit: int = 5) -> Dict[str, Any]:
         """

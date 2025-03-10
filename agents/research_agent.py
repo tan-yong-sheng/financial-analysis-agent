@@ -11,9 +11,11 @@ sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from agents.base_agent import BaseAgent
 from config import MAX_SEARCH_RESULTS, MAX_RESEARCH_DEPTH, SERPAPI_API_KEY
 from utils.llm_utils import parse_llm_json_response, parse_and_validate_llm_response, parse_list_response
-from models.research_models import ResearchPlan, ArticleContent, SearchResult, ResearchAnalysis
+from models.research_models import ResearchPlan, ArticleContent, SearchResult, ResearchAnalysis, SearchResults
+from utils.observability import monitor_agent_method, StructuredLogger, AgentTracer
 
 logger = logging.getLogger(__name__)
+structured_logger = StructuredLogger("ResearchAgent")
 
 class ResearchAgent(BaseAgent):
     """Agent responsible for conducting market research and gathering information."""
@@ -22,100 +24,71 @@ class ResearchAgent(BaseAgent):
         """Initialize research agent."""
         role = "a financial researcher that conducts market research and gathers information about companies and industries"
         super().__init__(role, "Market Researcher", base_url=base_url, model_name=model_name)
-        
+        self.tracer = AgentTracer("Market Researcher", structured_logger)
+    
+    @monitor_agent_method()
     def create_research_plan(self, input_data: Dict[str, Any]) -> Dict[str, Any]:
-        """
-        Create a research plan for a company based on initial data.
-        
-        Args:
-            input_data (dict): Input data containing ticker and company data.
-            
-        Returns:
-            dict: Research plan with focus areas and questions.
-        """
-        ticker = input_data.get("ticker")
-        company_data = input_data.get("company_data", {})
-        
-        if not ticker:
-            return {"error": "No ticker symbol provided for research planning"}
-            
-        # Get company information from the data if available
-        company_name = company_data.get("companyName", ticker)
-        company_sector = company_data.get("sector", "")
-        company_industry = company_data.get("industry", "")
-        company_description = company_data.get("description", "")
-            
-        # Generate research plan with LLM
-        prompt = f"""
-        You are creating a detailed financial research plan for {company_name} ({ticker}).
-
-        Company Details:
-        - Sector: {company_sector}
-        - Industry: {company_industry}
-        - Description: {company_description}
-
-        Please develop a comprehensive research plan that includes:
-        1. Key financial metrics to analyze
-        2. Specific industry factors to research
-        3. Main competitors to compare against
-        4. Market trends to investigate
-        5. Potential risks and opportunities to identify
-        6. Recent news and events to research
-
-        For each area, provide specific questions that should be answered during research.
-        Format your response as a structured JSON object with the following keys:
-        - key_areas: list of research focus areas
-        - metrics: list of important financial metrics to analyze
-        - competitors: list of main competitors to research
-        - industry_factors: list of industry-specific factors to investigate
-        - questions: list of key questions for the research to answer
-        - research_sources: list of recommended data sources for the research
-        """
-        
+        self.tracer.start_task("create_research_plan", ticker=input_data.get("ticker"))
         try:
-            response = self._call_llm(prompt)
+            ticker = input_data.get("ticker")
+            company_data = input_data.get("company_data", {})
             
-            # Create default structure with ticker and company
-            default_plan = {
-                "ticker": ticker,
-                "company_name": company_name,
-                "key_areas": ["financial_performance", "market_position", "industry_trends", "risks"],
-                "metrics": ["revenue_growth", "profit_margins", "debt_to_equity", "return_on_equity"],
-                "competitors": [],
-                "industry_factors": [],
-                "questions": ["What is the company's financial health?", 
-                            "How does it compare to competitors?",
-                            "What are the key risks and opportunities?"],
-                "research_sources": ["financial_statements", "news_articles", "analyst_reports"]
-            }
+            if not ticker:
+                return {"error": "No ticker symbol provided for research planning"}
+                
+            # Get company information from the data if available
+            company_name = company_data.get("companyName", ticker)
+            company_sector = company_data.get("sector", "")
+            company_industry = company_data.get("industry", "")
+            company_description = company_data.get("description", "")
+                
+            # Generate research plan with LLM using structured output
+            prompt = f"""
+            Create a detailed financial research plan for {company_name} ({ticker}).
+
+            Company Details:
+            - Sector: {company_sector}
+            - Industry: {company_industry}
+            - Description: {company_description}
+
+            Include key financial metrics to analyze, specific industry factors to research, 
+            main competitors to compare against, market trends to investigate,
+            potential risks and opportunities to identify, and recent news and events to research.
+
+            For each area, provide specific questions that should be answered during research.
+            """
             
-            # Use our utility for robust JSON parsing with fallback
-            research_plan = parse_llm_json_response(
-                response,
-                default_structure=default_plan,
-                logger_name="ResearchAgent.create_research_plan"
-            )
-            
-            # Make sure ticker and company name are included
-            research_plan["ticker"] = ticker
-            research_plan["company_name"] = company_name
-            
-            return research_plan
-            
+            try:
+                # Use structured output with instructor
+                plan = self._call_structured_llm(prompt, ResearchPlan)
+                
+                # Ensure ticker and company name are included
+                plan.ticker = ticker
+                plan.company_name = company_name
+                
+                # Convert to dictionary for compatibility with existing code
+                result = plan.model_dump()
+                self.tracer.end_task(status="success", result_summary={"ticker": result.get("ticker")})
+                return result
+                
+            except Exception as e:
+                logger.error(f"Error creating research plan: {str(e)}")
+                self.tracer.end_task(status="error", error_message=str(e))
+                return {
+                    "ticker": ticker,
+                    "company_name": company_name,
+                    "key_areas": ["financial_performance", "market_position", "industry_trends", "risks"],
+                    "metrics": ["revenue_growth", "profit_margins", "debt_to_equity", "return_on_equity"],
+                    "competitors": [],
+                    "industry_factors": [],
+                    "questions": ["What is the company's financial health?", 
+                                "How does it compare to competitors?",
+                                "What are the key risks and opportunities?"],
+                    "research_sources": ["financial_statements", "news_articles", "analyst_reports"]
+                }
         except Exception as e:
-            logger.error(f"Error creating research plan: {str(e)}")
-            return {
-                "ticker": ticker,
-                "company_name": company_name,
-                "key_areas": ["financial_performance", "market_position", "industry_trends", "risks"],
-                "metrics": ["revenue_growth", "profit_margins", "debt_to_equity", "return_on_equity"],
-                "competitors": [],
-                "industry_factors": [],
-                "questions": ["What is the company's financial health?", 
-                             "How does it compare to competitors?",
-                             "What are the key risks and opportunities?"],
-                "research_sources": ["financial_statements", "news_articles", "analyst_reports"]
-            }
+            self.tracer.end_task(status="error", error_message=str(e))
+            raise
 
     def search_web(self, query: str, num_results: int = MAX_SEARCH_RESULTS) -> List[Dict[str, Any]]:
         """
@@ -131,35 +104,21 @@ class ResearchAgent(BaseAgent):
         # In a real implementation, this would use SerpAPI
         # For now, simulate a response with structured information
         prompt = f"""
-        You're helping me simulate search results for the query: "{query}"
+        Generate {num_results} realistic search results for the query: "{query}"
         
-        Please generate {num_results} realistic search results that would appear for this query,
-        including title, link, and snippet for each. Make sure the information is factually
-        plausible and would be helpful for financial analysis.
-        
-        Format the results as a JSON array of objects with "title", "link", and "snippet" fields.
+        Each result should include title, link, and snippet that would be helpful for financial analysis.
+        Make sure the information is factually plausible.
         """
         
         try:
-            response = self._call_llm(prompt)
+            # Use instructor for structured output
+            results = self._call_structured_llm(prompt, SearchResults)
             
-            # Use our list parser utility
-            search_results = parse_list_response(
-                response,
-                item_model=SearchResult,
-                default_items=[{"error": "Failed to parse search results"}],
-                logger_name="ResearchAgent.search_web"
-            )
+            # Take only the requested number
+            results_list = results.results[:num_results]
             
-            # Convert Pydantic models to dicts if needed and take only the requested number
-            results_as_dicts = []
-            for item in search_results[:num_results]:
-                if hasattr(item, "model_dump"):
-                    results_as_dicts.append(item.model_dump())
-                else:
-                    results_as_dicts.append(item)
-                    
-            return results_as_dicts
+            # Convert to dict
+            return [item.model_dump() for item in results_list]
             
         except Exception as e:
             logger.error(f"Error in search_web: {str(e)}")
@@ -175,36 +134,21 @@ class ResearchAgent(BaseAgent):
         Returns:
             dict: Extracted content and summary
         """
-        # In a real implementation, this would fetch the real webpage
-        # For now, simulate content extraction with the LLM
+        # Simulate content extraction with structured output
         prompt = f"""
-        You're helping me simulate extracting content from the URL: {url}
+        Extract content from the URL: {url}
         
-        Based on the URL, please generate realistic but fictional article content that might
-        appear on this page, focusing on financial/business information. Then provide a concise
-        summary of this content.
-        
-        Format your response as a JSON object with:
-        - "title": The article title
-        - "date_published": A realistic publication date
-        - "content": A few paragraphs of content
-        - "summary": A concise 2-3 sentence summary of the key points
+        Based on the URL, generate realistic but fictional article content that might
+        appear on this page, focusing on financial/business information.
+        Include a title, publication date, content paragraphs, and a concise 2-3 sentence summary.
         """
         
         try:
-            response = self._call_llm(prompt)
+            # Use instructor for structured output
+            content = self._call_structured_llm(prompt, ArticleContent)
             
-            # Use our validation utility with the ArticleContent model
-            content = parse_and_validate_llm_response(
-                response,
-                model_class=ArticleContent,
-                logger_name="ResearchAgent.extract_article_content"
-            )
-            
-            # Convert to dict if it's a Pydantic model
-            if hasattr(content, "model_dump"):
-                return content.model_dump()
-            return content
+            # Convert to dict
+            return content.model_dump()
             
         except Exception as e:
             logger.error(f"Error extracting article content: {str(e)}")
@@ -292,7 +236,7 @@ class ResearchAgent(BaseAgent):
         
         # Prepare content for LLM analysis
         prompt = f"""
-        You're analyzing research findings for {company_name} ({ticker}) to extract key insights.
+        Analyze research findings for {company_name} ({ticker}) to extract key insights.
         
         Research Plan:
         {json.dumps(research_plan, indent=2)}
@@ -300,50 +244,26 @@ class ResearchAgent(BaseAgent):
         Research Findings:
         {json.dumps(research_findings, indent=2)}
         
-        Please analyze these findings and extract:
+        Extract:
         1. Key market trends affecting the company
         2. Competitive position analysis
         3. Major risks and opportunities
         4. Recent events that may impact financial performance
         5. Industry outlook and how it affects the company
         
-        Format your response as a structured JSON object with clear sections for each area.
         Include citations to the source material when possible.
         """
         
         try:
-            response = self._call_llm(prompt)
-            
-            # Default structure for analysis
-            default_analysis = {
-                "market_trends": ["Unable to extract market trends from the analysis"],
-                "competitive_position": "Analysis failed to produce structured results",
-                "risks_opportunities": {
-                    "risks": ["Data parsing error"],
-                    "opportunities": ["Data parsing error"]
-                },
-                "recent_events": ["No events could be extracted from the analysis"],
-                "industry_outlook": "Unable to determine industry outlook from the analysis"
-            }
-            
-            # Use our validation utility with ResearchAnalysis model
-            analysis_result = parse_and_validate_llm_response(
-                response,
-                model_class=ResearchAnalysis,
-                logger_name="ResearchAgent.analyze_research_findings"
-            )
-            
-            # Convert to dict if it's a Pydantic model
-            analysis = analysis_result
-            if hasattr(analysis_result, "model_dump"):
-                analysis = analysis_result.model_dump()
+            # Use instructor for structured output
+            analysis = self._call_structured_llm(prompt, ResearchAnalysis)
             
             # Combine with original findings for a complete research package
             return {
                 "ticker": ticker,
                 "company_name": company_name,
                 "raw_findings": research_findings,
-                "analysis": analysis
+                "analysis": analysis.model_dump()
             }
             
         except Exception as e:

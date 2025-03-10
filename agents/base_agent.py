@@ -1,17 +1,19 @@
 import sys
 import os
 import json
-from typing import List, Dict, Any, Optional, Type
+from typing import List, Dict, Any, Optional, Type, TypeVar, Generic
 from openai import OpenAI
 import logging
 from pydantic import BaseModel
-from utils.llm_utils import create_openai_function_schema
+import instructor
 
 # Add project root to path
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from config import OPENAI_API_KEY, OPENAI_MODEL, OPENAI_TEMPERATURE, OPENAI_MAX_TOKENS, AGENT_MEMORY_LIMIT
 
 logger = logging.getLogger(__name__)
+
+T = TypeVar('T', bound=BaseModel)
 
 class BaseAgent:
     """Base class for all agents in the system."""
@@ -26,10 +28,15 @@ class BaseAgent:
             base_url (str, optional): OpenAI API base URL
             model_name (str, optional): OpenAI model name to use
         """
-        self.client = OpenAI(api_key=OPENAI_API_KEY, base_url=base_url) if base_url else OpenAI(api_key=OPENAI_API_KEY)
+        # Create standard client for regular completions
+        self.standard_client = OpenAI(api_key=OPENAI_API_KEY, base_url=base_url) if base_url else OpenAI(api_key=OPENAI_API_KEY)
+        
+        # Create instructor-patched client for structured outputs
+        self.instructor_client = instructor.from_openai(OpenAI(api_key=OPENAI_API_KEY, base_url=base_url) if base_url else OpenAI(api_key=OPENAI_API_KEY))
+        
         self.role = role
         self.name = name
-        self.model_name = model_name or OPENAI_MODEL  # Fix: Changed from self.model to self.model_name
+        self.model_name = model_name or OPENAI_MODEL
         self.temperature = OPENAI_TEMPERATURE
         self.max_tokens = OPENAI_MAX_TOKENS
         self.memory = []
@@ -38,14 +45,12 @@ class BaseAgent:
             {"role": "system", "content": f"You are {name}, {role}. Always respond with JSON when appropriate."}
         ]
         
-    def _call_llm(self, prompt: str, response_model: Optional[Type[BaseModel]] = None, use_structured_output: bool = False):
+    def _call_llm(self, prompt: str):
         """
-        Call LLM with prompt and return the response.
+        Call LLM with prompt and return the raw text response.
         
         Args:
             prompt: The prompt to send to the LLM
-            response_model: Optional Pydantic model to format response as structured JSON
-            use_structured_output: Whether to use OpenAI's function calling for structured output
             
         Returns:
             str: The LLM response
@@ -55,34 +60,49 @@ class BaseAgent:
             {"role": "user", "content": prompt}
         ]
         
-        if use_structured_output and response_model:
-            # Create function schema for structured output
-            function_schema = create_openai_function_schema(
-                model_class=response_model,
-                name="generate_structured_response", 
-                description="Generate a structured response according to the specified format"
-            )
+        # Use the standard client (not patched with instructor) for regular text responses
+        response = self.standard_client.chat.completions.create(
+            model=self.model_name,
+            messages=messages,
+            temperature=self.temperature,
+            max_tokens=self.max_tokens
+        )
+        
+        return response.choices[0].message.content
+    
+    def _call_structured_llm(self, prompt: str, response_model: Type[T]) -> T:
+        """
+        Call LLM with prompt and return a structured response based on the model.
+        
+        Args:
+            prompt: The prompt to send to the LLM
+            response_model: Pydantic model for the expected response structure
             
-            # Call OpenAI with function calling
-            response = self.client.chat.completions.create(
+        Returns:
+            T: Structured response data as a Pydantic model instance
+        """
+        messages = [
+            {"role": "system", "content": f"You are {self.role}. Respond with structured data."},
+            {"role": "user", "content": prompt}
+        ]
+        
+        try:
+            # Use the instructor-patched client for structured responses
+            response = self.instructor_client.chat.completions.create(
                 model=self.model_name,
                 messages=messages,
-                functions=[function_schema],
-                function_call={"name": "generate_structured_response"}
+                response_model=response_model,
+                temperature=self.temperature,
+                max_tokens=self.max_tokens
             )
-            
-            # Extract the JSON response from function call
-            function_call = response.choices[0].message.function_call
-            if function_call and function_call.arguments:
-                return function_call.arguments
-        else:
-            # Regular LLM call without structured output
-            response = self.client.chat.completions.create(
-                model=self.model_name,
-                messages=messages
-            )
-            
-            return response.choices[0].message.content
+            return response
+        except Exception as e:
+            logger.error(f"Error in structured LLM call: {str(e)}")
+            # Create an instance with default values if possible
+            try:
+                return response_model()
+            except:
+                raise e
     
     def process(self, input_data: Any) -> Any:
         """
