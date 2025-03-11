@@ -93,23 +93,6 @@ class FinancialAnalyzer:
     def comprehensive_analysis(self, financial_data: Dict[str, Any]) -> Dict[str, Any]
 ```
 
-### FinancialDataCollector
-
-```python
-class FinancialDataCollector:
-    def __init__()
-    def get_company_profile(self, ticker: str) -> List[Dict[str, Any]]
-    def get_income_statement(self, ticker: str, period: str = "annual", limit: int = 5) -> List[Dict[str, Any]]
-    def get_balance_sheet(self, ticker: str, period: str = "annual", limit: int = 5) -> List[Dict[str, Any]]
-    def get_cash_flow(self, ticker: str, period: str = "annual", limit: int = 5) -> List[Dict[str, Any]]
-    def get_key_metrics(self, ticker: str, period: str = "annual", limit: int = 5) -> List[Dict[str, Any]]
-    def get_financial_ratios(self, ticker: str, period: str = "annual", limit: int = 5) -> List[Dict[str, Any]]
-    def get_stock_price(self, ticker: str, timeseries: int = 365) -> Dict[str, Any]
-    def get_analyst_estimates(self, ticker: str, period: str = "annual", limit: int = 5) -> List[Dict[str, Any]]
-    def get_technical_indicators(self, ticker: str, indicator: str, time_period: int = 14) -> Dict[str, Any]
-    def get_comprehensive_data(self, ticker: str, period: str = "annual", limit: int = 5) -> Dict[str, Any]
-```
-
 ## Tool Classes
 
 ### FinancialDataProvider

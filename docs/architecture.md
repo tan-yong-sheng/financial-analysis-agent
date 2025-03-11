@@ -1,6 +1,6 @@
 # System Architecture
 
-The Financial Analysis System follows a modular architecture based on specialized agents that collaborate to produce financial analysis reports.
+The **Financial Analysis System** is built using a modular **multi-agent architecture**, where each specialized agent handles a specific task in the financial analysis pipeline.
 
 ## High-Level Architecture
 
@@ -22,7 +22,7 @@ graph TB
     DataCollectionAgent["Data Collection<br/>Agent"]:::agent
     ResearchAgent["Research Agent"]:::agent
     AnalysisAgent["Analysis Agent"]:::agent
-    WriterAgent["Writer Agent"]:::agent
+    ReportAgent["Report Agent"]:::agent
     FactCheckAgent["Fact Check Agent"]:::agent
     
     %% Tools
@@ -43,7 +43,7 @@ graph TB
     Orchestrator --> DataCollectionAgent
     Orchestrator --> ResearchAgent
     Orchestrator --> AnalysisAgent
-    Orchestrator --> WriterAgent
+    Orchestrator --> ReportAgent
     
     PlannerAgent --> ResearchPlan
     
@@ -57,8 +57,8 @@ graph TB
     FinancialData --> AnalysisAgent
     ResearchResults --> AnalysisAgent
     AnalysisAgent --> AnalysisResults
-    AnalysisResults --> WriterAgent
-    WriterAgent --> Report
+    AnalysisResults --> ReportAgent
+    ReportAgent --> Report
     Report --> FactCheckAgent
     FactCheckAgent --> FinalReport
 
@@ -68,9 +68,15 @@ graph TB
         DataCollectionAgent
         ResearchAgent
         AnalysisAgent
-        WriterAgent
     end
 ```
+
+
+📌 Little note to diagram above:
+
+- 🟦 Agents: Perform specialized tasks (e.g., data collection, analysis).
+- 🟩 Tools: External data sources or APIs used for research.
+- ⬜ Data: Structured outputs produced by agents.
 
 ## Workflow
 
@@ -81,9 +87,10 @@ The system follows this workflow:
 3. **Data Collection Agent** gathers financial data based on the plan
 4. **Research Agent** conducts web research on the company and industry
 5. **Analysis Agent** processes financial data and integrates research insights
-6. **Writer Agent** generates a comprehensive financial report
+6. **Report Agent** generates a comprehensive financial report
 7. **Fact Check Agent** verifies the accuracy of the report
-8. **Orchestrator** delivers the final report
+8. After then, it delivers the final report
+
 
 ## Agent Communication
 
@@ -93,7 +100,7 @@ Agents communicate by passing structured data objects. Each agent takes specific
 - **Data Collection Agent**: Takes ticker and research plan, outputs financial data
 - **Research Agent**: Takes ticker and company profile, outputs research results
 - **Analysis Agent**: Takes financial data and research results, outputs analysis
-- **Writer Agent**: Takes analysis results, outputs draft report
+- **Report Agent**: Takes analysis results, outputs draft report
 - **Fact Check Agent**: Takes draft report and data, outputs verified report
 
 ## Dependencies

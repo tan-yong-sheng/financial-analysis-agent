@@ -710,11 +710,11 @@
   
   
     <li class="md-nav__item">
-      <a href="../agents/writer_agent/" class="md-nav__link">
+      <a href="../agents/report_agent/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
-    Writer Agent
+    Report Agent
     
   </span>
   
@@ -1085,7 +1085,7 @@
     DataCollectionAgent["Data Collection&lt;br/&gt;Agent"]:::agent
     ResearchAgent["Research Agent"]:::agent
     AnalysisAgent["Analysis Agent"]:::agent
-    WriterAgent["Writer Agent"]:::agent
+    ReportAgent["Report Agent"]:::agent
     FactCheckAgent["Fact Check Agent"]:::agent
 
     %% Tools
@@ -1106,7 +1106,7 @@
     Orchestrator --&gt; DataCollectionAgent
     Orchestrator --&gt; ResearchAgent
     Orchestrator --&gt; AnalysisAgent
-    Orchestrator --&gt; WriterAgent
+    Orchestrator --&gt; ReportAgent
 
     PlannerAgent --&gt; ResearchPlan
 
@@ -1120,8 +1120,8 @@
     FinancialData --&gt; AnalysisAgent
     ResearchResults --&gt; AnalysisAgent
     AnalysisAgent --&gt; AnalysisResults
-    AnalysisResults --&gt; WriterAgent
-    WriterAgent --&gt; Report
+    AnalysisResults --&gt; ReportAgent
+    ReportAgent --&gt; Report
     Report --&gt; FactCheckAgent
     FactCheckAgent --&gt; FinalReport
 
@@ -1131,7 +1131,6 @@
         DataCollectionAgent
         ResearchAgent
         AnalysisAgent
-        WriterAgent
     end</code></pre>
 <h2 id="workflow">Workflow<a class="headerlink" href="#workflow" title="Permanent link">&para;</a></h2>
 <p>The system follows this workflow:</p>
@@ -1141,7 +1140,7 @@
 <li><strong>Data Collection Agent</strong> gathers financial data based on the plan</li>
 <li><strong>Research Agent</strong> conducts web research on the company and industry</li>
 <li><strong>Analysis Agent</strong> processes financial data and integrates research insights</li>
-<li><strong>Writer Agent</strong> generates a comprehensive financial report</li>
+<li><strong>Report Agent</strong> generates a comprehensive financial report</li>
 <li><strong>Fact Check Agent</strong> verifies the accuracy of the report</li>
 <li><strong>Orchestrator</strong> delivers the final report</li>
 </ol>
@@ -1152,7 +1151,7 @@
 <li><strong>Data Collection Agent</strong>: Takes ticker and research plan, outputs financial data</li>
 <li><strong>Research Agent</strong>: Takes ticker and company profile, outputs research results</li>
 <li><strong>Analysis Agent</strong>: Takes financial data and research results, outputs analysis</li>
-<li><strong>Writer Agent</strong>: Takes analysis results, outputs draft report</li>
+<li><strong>Report Agent</strong>: Takes analysis results, outputs draft report</li>
 <li><strong>Fact Check Agent</strong>: Takes draft report and data, outputs verified report</li>
 </ul>
 <h2 id="dependencies">Dependencies<a class="headerlink" href="#dependencies" title="Permanent link">&para;</a></h2>

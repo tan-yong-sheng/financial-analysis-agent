@@ -31,9 +31,9 @@ Conducts web research on industry trends and market news. The Research Agent use
 
 Analyzes financial data to extract insights and identify trends. This agent combines algorithmic financial analysis with LLM-powered qualitative analysis to provide comprehensive insights.
 
-### [Writer Agent](writer_agent.md)
+### [Report Agent](report_agent.md)
 
-Generates well-structured, professional financial reports. The Writer Agent takes analysis results and transforms them into a coherent, readable report in Markdown format.
+Generates well-structured, professional financial reports. The Report Agent takes analysis results and transforms them into a coherent, readable report in Markdown format.
 
 ### [Fact Check Agent](fact_check_agent.md)
 

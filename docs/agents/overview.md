@@ -33,7 +33,7 @@ All agents inherit from the BaseAgent class, which provides:
    - Data interpretation
    - Insight generation
 
-5. **Writer Agent**
+5. **Report Agent**
    - Report generation
    - Content structuring
    - Data visualization

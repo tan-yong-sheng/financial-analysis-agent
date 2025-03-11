@@ -18,7 +18,7 @@ financial-analysis/
 │   ├── data_collection_agent.py  # Financial data collection
 │   ├── research_agent.py   # Web research functionality
 │   ├── analysis_agent.py   # Financial analysis and insights
-│   ├── writer_agent.py     # Report generation
+│   ├── report_agent.py     # Report generation
 │   └── fact_check_agent.py # Validation and fact-checking
 │
 ├── modules/                # Core computational modules

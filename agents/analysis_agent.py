@@ -91,7 +91,7 @@ class AnalysisAgent(BaseAgent):
                 "error": "Failed to generate enhanced qualitative analysis"
             }
     
-    def integrate_market_research(self, analysis_results: Dict[str, Any], research_results: Dict[str, Any], include_citations: bool = False) -> Dict[str, Any]:
+    def integrate_market_research(self, analysis_results: Dict[str, Any], research_results: Dict[str, Any], include_citations: bool = True) -> Dict[str, Any]:
         """
         Integrate market research with financial analysis.
         

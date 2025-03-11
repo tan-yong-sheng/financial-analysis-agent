@@ -944,88 +944,32 @@
     "error": "Failed to generate enhanced qualitative analysis"
   },
   "market_research": {
-    "ticker": "AAPL",
-    "company_name": "Apple Inc.",
-    "raw_findings": {
-      "company_overview": {
-        "title": "Apple's Fiscal Year 2023 Results: Resilience and Innovation",
-        "date_published": "2024-03-15",
-        "content": "Apple's fiscal year 2023 results demonstrate the company's resilience and innovation in a challenging global economic environment. Despite headwinds in the smartphone market, Apple's services sector continues to expand, driven by growth in subscriptions and cloud services. The company's strategic investments in research and development are expected to yield new product categories and revenue streams in the coming years. Apple's strong balance sheet and cash flow provide a solid foundation for future growth and shareholder returns. The company announced a new share repurchase program and dividend increase, signaling confidence in its long-term prospects. Apple's commitment to sustainability and environmental responsibility remains a key differentiator for its brand and resonates with consumers. The company's supply chain diversification efforts are aimed at mitigating geopolitical risks and ensuring business continuity. Apple's focus on premium products and customer loyalty has enabled it to maintain profitability and market share. The company's expansion into new markets, such as India and Southeast Asia, presents significant growth opportunities. Apple's ecosystem of hardware, software, and services creates a competitive advantage and enhances customer engagement. The company's ability to adapt to changing consumer preferences and technological advancements will be crucial for its continued success.",
-        "summary": "Apple's fiscal year 2023 results showcase resilience amid economic challenges, with services sector growth and strategic R&D investments driving future prospects. A new share repurchase program and dividend increase reflect confidence in long-term growth and shareholder returns. Apple's commitment to sustainability, supply chain diversification, and ecosystem strength underpin its competitive advantage and market leadership."
-      },
-      "financial_insights": [
-        {
-          "title": "Apple Reports Strong Q1 2024 Earnings",
-          "date_published": "2024-02-01",
-          "content": "Apple's Q1 2024 earnings call highlighted a strong performance, with revenue reaching $119.6 billion, up 2% year over year, and diluted earnings per share of $2.18, a 16% increase. CEO Tim Cook emphasized the robust growth in emerging markets and the continued strength of the iPhone, which saw a resurgence in sales. The company's services sector also played a crucial role, achieving record revenue. Looking ahead, Apple anticipates sustained growth, driven by innovation and strategic investments in key areas. \n\nCFO Luca Maestri noted the company's commitment to returning value to shareholders, with plans for ongoing share repurchases and dividend increases. Despite macroeconomic challenges, Apple remains confident in its ability to navigate the evolving market landscape and deliver long-term value. The earnings call underscored Apple's resilience and its focus on innovation, customer satisfaction, and shareholder returns.",
-          "summary": "Apple's Q1 2024 earnings call revealed strong financial results, with revenue up 2% year over year. CEO Tim Cook highlighted growth in emerging markets and strength in iPhone sales, while CFO Luca Maestri emphasized shareholder value through buybacks and dividends."
-        },
-        {
-          "title": "Acme Corp Announces Q1 2024 Results",
-          "date_published": "2024-07-24",
-          "content": "Acme Corp Reports Strong Q1 Growth\n\nAcme Corporation ( \u09b8\u09cd\u099f\u0995  ticker: ACME ) today announced its first-quarter results, reporting significant growth in revenue and earnings per share. The company's success is attributed to increased demand for its flagship product and successful expansion into new markets.\n\nKey Highlights:\n\n*   Revenue increased by 25% compared to the same quarter last year.\n*   Earnings per share rose by 18%.\n*   The company expanded its operations to three new countries.\n\nFuture Outlook\n\nAcme Corp anticipates continued growth in the coming quarters, driven by ongoing product innovation and strategic partnerships. The company is committed to delivering value to its shareholders and maintaining its position as a market leader.\n\nAbout Acme Corp\n\nAcme Corporation is a global leader in providing innovative solutions for various industries. With a strong focus on research and development, Acme Corp is dedicated to creating products that meet the evolving needs of its customers.",
-          "summary": "Acme Corporation announced strong first-quarter growth, with a 25% increase in revenue and an 18% rise in earnings per share. The company's success is due to high demand and expansion into new markets. Acme Corp expects continued growth through product innovation and strategic partnerships."
-        },
-        {
-          "title": "Apple's Fiscal Year 2024 Results: Services and Emerging Markets Drive Growth",
-          "date_published": "2024-10-27",
-          "content": "Apple's fiscal year 2024 results showcase the company's resilience and innovation across its product lines. Despite a challenging macroeconomic environment, Apple reported a revenue of $383.93 billion, a slight decrease of 2.8% compared to the previous year. However, the company's strategic focus on services and emerging markets has started to yield positive results, offsetting some of the decline in hardware sales.\n\nSpecifically, Apple's services segment, which includes the App Store, Apple Music, and iCloud, demonstrated robust growth, reaching $85.2 billion in revenue, an increase of 9% year-over-year. This growth underscores Apple's successful transition towards a recurring revenue model, enhancing the company's long-term financial stability. Furthermore, Apple's expansion in emerging markets, particularly India and Southeast Asia, has shown promising signs, with a revenue increase of 15% in these regions.\n\nLooking ahead, Apple's management has expressed optimism about the company's prospects, citing upcoming product launches and continued investments in research and development. The company's commitment to innovation remains strong, with plans to introduce new technologies in areas such as augmented reality and artificial intelligence. These investments are expected to drive future growth and solidify Apple's position as a leader in the global technology market.",
-          "summary": "Apple's fiscal year 2024 results reveal resilience amid macroeconomic challenges, with a slight revenue decrease offset by growth in services and emerging markets. The company's strategic focus on recurring revenue and innovation in augmented reality and AI is expected to drive future growth and maintain its leadership in the technology sector."
-        }
+    "industry_trends": {
+      "growth_rate": 5.3,
+      "key_drivers": [
+        "Digital transformation",
+        "Cloud services",
+        "Mobile technology"
       ],
-      "market_position": {
-        "title": "Apple and Samsung Market Share 2024: A Battle for Dominance",
-        "date_published": "2024-07-15",
-        "content": "In the first quarter of 2024, Apple and Samsung continue to dominate the smartphone market, holding a combined market share of over 50%. However, intensifying competition from Chinese manufacturers like Xiaomi and Oppo is gradually eroding their dominance. Apple's market share remained relatively stable at 27%, driven by strong sales of the iPhone 15 series, particularly in North America and Europe. Samsung experienced a slight dip in market share, falling to 24%, as its flagship Galaxy S24 faced supply chain challenges and increased competition in key Asian markets. Despite these challenges, both companies are investing heavily in research and development, focusing on innovations such as foldable displays, advanced camera technology, and 5G connectivity to maintain their competitive edge. Market analysts predict a continued battle for market share in the coming quarters, with the success of new product launches and strategic partnerships playing a crucial role in determining the ultimate winners.",
-        "summary": "Apple and Samsung maintain their lead in the smartphone market in Q1 2024, holding over 50% of the market share. Increased competition from Chinese manufacturers is impacting Samsung's market share, while Apple remains stable due to strong iPhone 15 sales."
-      },
-      "industry_analysis": {
-        "title": "Apple Market Analysis 2023",
-        "date_published": "2023-12-01",
-        "content": "Apple Market Analysis 2023: A Mixed Bag\n\nApple's performance in 2023 has been a subject of intense debate among analysts. While the company's stock price has shown resilience, buoyed by strong brand loyalty and consistent innovation, underlying market trends suggest a more nuanced picture. Sales of iPhones, while still robust, have shown signs of plateauing in key markets such as North America and Europe. This saturation is forcing Apple to look towards emerging markets like India and Southeast Asia for future growth.\n\nThe services sector, including Apple TV+, Apple Music, and iCloud, continues to be a bright spot, demonstrating consistent double-digit growth. However, regulatory scrutiny and increasing competition in the streaming space pose potential challenges. Apple's foray into augmented reality with the Vision Pro headset has generated considerable buzz, but its high price point and limited initial availability may restrict its impact on the bottom line in the short term.\n\nOverall, Apple's financial health remains strong, with a massive cash reserve providing ample flexibility for strategic investments and acquisitions. The company's ability to navigate evolving market dynamics and successfully diversify its revenue streams will be crucial in maintaining its leadership position in the tech industry.\n\nDespite challenges, Apple maintains a strong financial position. Diversification and strategic investments will be key to maintaining its market leadership.",
-        "summary": "Apple's 2023 performance reveals both strengths and challenges. iPhone sales are plateauing, but the services sector is growing. Strategic investments are crucial."
-      },
-      "news_and_events": [
-        {
-          "title": "Apple Q3 2024 Earnings: Services Growth Offsets iPhone Dip",
-          "date_published": "2024-07-27",
-          "content": "Apple's Q3 2024 earnings reveal a mixed bag of results, with strong growth in services offsetting a slight dip in iPhone sales. The company announced an EPS of $1.40, beating analyst expectations by $0.05. However, revenue came in slightly below forecasts at $82 billion, a 1% increase year-over-year.\n\nServices continue to be a major growth driver, with revenue up 15% to $24 billion. This includes strong performance from the App Store, Apple Music, and iCloud. Wearables and accessories also saw healthy growth, driven by the popularity of the Apple Watch and AirPods.\n\nLooking ahead, Apple is optimistic about the upcoming holiday season, with plans to launch new products in several categories. The company expects revenue growth to accelerate in Q4, driven by strong demand for its latest iPhones and continued growth in services.",
-          "summary": "Apple's Q3 2024 earnings were a mix of strong services growth and slight iPhone sales decline. EPS beat expectations, but revenue slightly missed. The company is optimistic about Q4 with new product launches planned."
-        },
-        {
-          "title": "Apple's AI Strategy: A Deep Dive",
-          "date_published": "2024-03-15",
-          "content": "Apple is aggressively investing in AI to enhance its product ecosystem. The company's AI initiatives are expected to drive significant revenue growth in the coming years, with a focus on improving user experience and creating new features for its devices and services. Apple's stock is anticipated to benefit from these advancements, making it a strong contender in the AI race against competitors.",
-          "summary": "Apple is making big strides in AI, aiming to boost user experience and create new features. This move is projected to increase revenue and strengthen Apple's position in the AI competition."
-        },
-        {
-          "title": "Apple Stock Analysis: Maintaining Growth in a Competitive Market",
-          "date_published": "2024-03-15",
-          "content": "Apple (AAPL) has shown resilience in a turbulent market, maintaining a steady growth trajectory despite industry-wide challenges. Recent analysis indicates a strong buy rating, driven by robust performance in the wearables and services sectors. The company's strategic investments in augmented reality and electric vehicles position it favorably for long-term growth, although increased competition from Asian markets poses a potential threat. Investors should closely monitor upcoming product launches and earnings reports for further insights.\n\nKey points include:\n\n*   Strong performance in wearables and services\n*   Strategic investments in AR and EVs\n*   Increased competition from Asian markets",
-          "summary": "Apple's stock demonstrates resilience with strong growth in wearables and services. Strategic investments in AR and EVs enhance long-term growth potential. Monitor product launches and earnings for insights amidst rising competition."
-        }
-      ],
-      "risk_factors": []
+      "challenges": [
+        "Supply chain disruptions",
+        "Talent acquisition",
+        "Regulatory changes"
+      ]
     },
-    "analysis": {
-      "market_trends": [
-        "Plateauing iPhone sales in key markets like North America and Europe, pushing Apple to focus on emerging markets (Apple Market Analysis 2023).",
-        "Growth in the services sector, including Apple TV+, Apple Music, and iCloud, demonstrating consistent double-digit growth (Apple Market Analysis 2023).",
-        "Aggressive investment in AI to enhance its product ecosystem, focusing on improving user experience and creating new features for its devices and services (Apple's AI Strategy: A Deep Dive)."
+    "competitive_landscape": {
+      "main_competitors": [
+        "MSFT",
+        "GOOGL",
+        "AMZN"
       ],
-      "competitive_position": "Apple and Samsung dominate the smartphone market, holding a combined market share of over 50% in Q1 2024. However, competition from Chinese manufacturers is increasing. Apple's market share remained relatively stable at 27%, driven by strong iPhone 15 sales. Samsung experienced a slight dip to 24% due to supply chain issues and competition in Asian markets (Apple and Samsung Market Share 2024: A Battle for Dominance).",
-      "risks_opportunities": {
-        "risks": [
-          "Increased competition from Chinese manufacturers like Xiaomi and Oppo is gradually eroding their dominance (Apple and Samsung Market Share 2024: A Battle for Dominance).",
-          "Regulatory scrutiny and increasing competition in the streaming space pose potential challenges to the services sector (Apple Market Analysis 2023)."
-        ],
-        "opportunities": []
-      },
-      "recent_events": [
-        "Apple's Q1 2024 earnings call highlighted a strong performance, with revenue reaching $119.6 billion, up 2% year over year, and diluted earnings per share of $2.18, a 16% increase (Apple Reports Strong Q1 2024 Earnings).",
-        "Apple's Q3 2024 earnings reveal a mixed bag of results, with strong growth in services offsetting a slight dip in iPhone sales (Apple Q3 2024 Earnings: Services Growth Offsets iPhone Dip)."
-      ],
-      "industry_outlook": "Apple's performance in 2023 reveals both strengths and challenges. iPhone sales are plateauing, but the services sector is growing. Strategic investments are crucial for maintaining its market leadership (Apple Market Analysis 2023)."
+      "market_share": {
+        "AAPL": 25.4,
+        "MSFT": 20.1,
+        "GOOGL": 15.7,
+        "AMZN": 10.3,
+        "Others": 28.5
+      }
     }
   },
   "error": "Failed to generate integrated insights"

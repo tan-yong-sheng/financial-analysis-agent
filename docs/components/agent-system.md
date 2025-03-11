@@ -26,7 +26,7 @@ The Financial Analysis Agent System uses a role-based architecture with speciali
 - Generates insights from data
 - Integrates various data sources
 
-### Writer Agent
+### Report Agent
 - Creates structured reports
 - Formats analysis results
 - Ensures clear communication
@@ -44,7 +44,7 @@ graph TD
     A --> C[Research Agent]
     B --> D[Analysis Agent]
     C --> D
-    D --> E[Writer Agent]
+    D --> E[Report Agent]
     E --> F[Fact Check Agent]
     F --> E
 ```

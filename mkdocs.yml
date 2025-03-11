@@ -62,7 +62,7 @@ nav:
     - Data Collection Agent: agents/data_collection_agent.md
     - Research Agent: agents/research_agent.md
     - Analysis Agent: agents/analysis_agent.md
-    - Writer Agent: agents/writer_agent.md
+    - Report Agent: agents/report_agent.md
     - Fact Check Agent: agents/fact_check_agent.md
   - Modules:
     - Overview: modules/index.md
