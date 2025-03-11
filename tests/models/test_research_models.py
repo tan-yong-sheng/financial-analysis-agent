@@ -95,20 +95,34 @@ def test_research_analysis_model():
     """Test ResearchAnalysis model validation"""
     # Valid data
     data = {
-        "market_trends": ["Trend 1", "Trend 2"],
-        "competitive_position": "Strong market position",
+        "market_trends": [
+            {"content": "Trend 1", "citation": "Source 1"},
+            {"content": "Trend 2", "citation": "Source 2"}
+        ],
+        "competitive_position": [
+            {"content": "Strong market position", "citation": "Source 3"}
+        ],
         "risks_opportunities": {
-            "risks": ["Risk 1"],
-            "opportunities": ["Opportunity 1"]
+            "risks": [{"content": "Risk 1", "citation": "Source 4"}],
+            "opportunities": [{"content": "Opportunity 1", "citation": "Source 5"}]
         },
-        "recent_events": ["Product launch", "Acquisition"],
-        "industry_outlook": "Positive growth expected"
+        "recent_events": [
+            {"content": "Product launch", "citation": "Source 6"},
+            {"content": "Acquisition", "citation": "Source 7"}
+        ],
+        "industry_outlook": {"content": "Positive growth expected", "citation": "Source 8"}
     }
     analysis = ResearchAnalysis(**data)
-    assert len(analysis.market_trends) == 2
-    assert analysis.competitive_position == "Strong market position"
-    assert len(analysis.risks_opportunities.risks) == 1
     
+    # Verify structure
+    assert len(analysis.market_trends) == 2
+    assert analysis.market_trends[0].content == "Trend 1"
+    assert analysis.market_trends[0].citation == "Source 1"
+    assert len(analysis.competitive_position) == 1
+    assert analysis.competitive_position[0].content == "Strong market position"
+    assert analysis.risks_opportunities.risks[0].content == "Risk 1"
+    assert analysis.industry_outlook.content == "Positive growth expected"
+
     # Default values for risks_opportunities
     minimal_data = {
         "competitive_position": "Average",

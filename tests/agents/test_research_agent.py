@@ -83,17 +83,28 @@ def test_analyze_research_findings(mock_research_agent):
     """Test analyze_research_findings with structured output"""
     agent, mock_call = mock_research_agent
     
+    from models.research_models import CitableItem, RisksOpportunities
+
     # Setup mock
     analysis = ResearchAnalysis(
-        market_trends=["Trend 1", "Trend 2"],
-        competitive_position="Strong position",
-        risks_opportunities={
-            "risks": ["Risk 1"],
-            "opportunities": ["Opportunity 1"]
-        },
-        recent_events=["Event 1"],
-        industry_outlook="Positive outlook"
+        market_trends=[
+            CitableItem(content="Trend 1", citation="Source 1"),
+            CitableItem(content="Trend 2", citation="Source 2")
+        ],
+        competitive_position=[
+            CitableItem(content="Strong position", citation="Source 3")
+        ],
+        risks_opportunities=RisksOpportunities(
+            risks=[CitableItem(content="Risk 1", citation="Source 4")],
+            opportunities=[CitableItem(content="Opportunity 1", citation="Source 5")]
+        ),
+        recent_events=[
+            CitableItem(content="Event 1", citation="Source 6")
+        ],
+        industry_outlook=CitableItem(content="Positive outlook", citation="Source 7")
     )
+    
+    # Configure mock to return the analysis
     mock_call.return_value = analysis
     
     # Execute
@@ -106,4 +117,7 @@ def test_analyze_research_findings(mock_research_agent):
     assert mock_call.call_args[0][1] == ResearchAnalysis
     assert result["ticker"] == "AAPL"
     assert "analysis" in result
-    assert result["analysis"]["market_trends"] == ["Trend 1", "Trend 2"]
+    assert result["analysis"]["market_trends"] == [
+        CitableItem(content="Trend 1", citation="Source 1"),
+        CitableItem(content="Trend 2", citation="Source 2")
+    ]

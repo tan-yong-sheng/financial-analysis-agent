@@ -6,6 +6,7 @@ from openai import OpenAI
 import logging
 from pydantic import BaseModel
 import instructor
+from utils.schema_utils import clean_schema_for_llm
 
 # Add project root to path
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
@@ -87,14 +88,42 @@ class BaseAgent:
         ]
         
         try:
+            # Use a patched instructor client that cleans schema defaults
+            client = self.instructor_client
+            
+            # For models that use function calling (e.g., VertexAI)
+            if hasattr(client, '_client') and hasattr(client._client, '_prepare_function_call'):
+                # Monkey patch the instructor client's schema preparation
+                original_prepare = client._client._prepare_function_call
+                
+                def patched_prepare(model, messages, response_model, **kwargs):
+                    result = original_prepare(model, messages, response_model, **kwargs)
+                    
+                    # Clean schemas if tools exist
+                    if 'tools' in result and isinstance(result['tools'], list):
+                        for tool in result['tools']:
+                            if 'function' in tool:
+                                if 'parameters' in tool['function']:
+                                    tool['function']['parameters'] = clean_schema_for_llm(tool['function']['parameters'])
+                    
+                    return result
+                
+                # Apply the patch
+                client._client._prepare_function_call = patched_prepare
+            
             # Use the instructor-patched client for structured responses
-            response = self.instructor_client.chat.completions.create(
+            response = client.chat.completions.create(
                 model=self.model_name,
                 messages=messages,
                 response_model=response_model,
                 temperature=self.temperature,
                 max_tokens=self.max_tokens
             )
+            
+            # Restore original prepare function if we patched it
+            if hasattr(client, '_client') and hasattr(client._client, '_prepare_function_call'):
+                client._client._prepare_function_call = original_prepare
+                
             return response
         except Exception as e:
             logger.error(f"Error in structured LLM call: {str(e)}")

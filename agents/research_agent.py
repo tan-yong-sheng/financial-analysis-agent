@@ -4,6 +4,7 @@ import json
 import re
 from typing import Dict, Any, List
 import logging
+from datetime import datetime
 
 # Add project root to path
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
@@ -25,6 +26,10 @@ class ResearchAgent(BaseAgent):
         role = "a financial researcher that conducts market research and gathers information about companies and industries"
         super().__init__(role, "Market Researcher", base_url=base_url, model_name=model_name)
         self.tracer = AgentTracer("Market Researcher", structured_logger)
+    
+    def _get_current_date(self) -> str:
+        """Get current date as a string in ISO format."""
+        return datetime.now().strftime("%Y-%m-%d")
     
     @monitor_agent_method()
     def create_research_plan(self, input_data: Dict[str, Any]) -> Dict[str, Any]:
@@ -99,7 +104,7 @@ class ResearchAgent(BaseAgent):
             num_results (int): Maximum number of results to return
             
         Returns:
-            list: Search results
+            list: Search results with source information
         """
         # In a real implementation, this would use SerpAPI
         # For now, simulate a response with structured information
@@ -117,8 +122,20 @@ class ResearchAgent(BaseAgent):
             # Take only the requested number
             results_list = results.results[:num_results]
             
-            # Convert to dict
-            return [item.model_dump() for item in results_list]
+            # Convert to dict and add source information
+            formatted_results = []
+            for item in results_list:
+                result_dict = item.model_dump()
+                result_dict["_source"] = {
+                    "type": "web_search",
+                    "query": query,
+                    "search_date": self._get_current_date(),
+                    "result_position": results_list.index(item) + 1,
+                    "search_engine": "SerpAPI (simulated)"
+                }
+                formatted_results.append(result_dict)
+                
+            return formatted_results
             
         except Exception as e:
             logger.error(f"Error in search_web: {str(e)}")
@@ -132,7 +149,7 @@ class ResearchAgent(BaseAgent):
             url (str): The URL to extract content from
             
         Returns:
-            dict: Extracted content and summary
+            dict: Extracted content and summary with source information
         """
         # Simulate content extraction with structured output
         prompt = f"""
@@ -148,12 +165,39 @@ class ResearchAgent(BaseAgent):
             content = self._call_structured_llm(prompt, ArticleContent)
             
             # Convert to dict
-            return content.model_dump()
+            result = content.model_dump()
+            
+            # Add source information
+            result["_source"] = {
+                "type": "article",
+                "url": url,
+                "extraction_date": self._get_current_date(),
+                "publication_name": self._extract_publication_name(url),
+                "publication_date": result.get("publication_date", "Unknown"),
+                "citation_format": f"{result.get('title')}. {self._extract_publication_name(url)}. {result.get('publication_date', 'n.d.')}. Retrieved from {url}"
+            }
+            
+            return result
             
         except Exception as e:
             logger.error(f"Error extracting article content: {str(e)}")
             return {"error": f"Failed to extract content: {str(e)}"}
-
+            
+    def _extract_publication_name(self, url: str) -> str:
+        """Extract publication name from URL."""
+        try:
+            # Simple extraction of domain name
+            domain = url.split('//')[1].split('/')[0]
+            # Remove www. prefix and get the main domain part
+            if domain.startswith('www.'):
+                domain = domain[4:]
+            # Take the first two parts of the domain or just the first if only one part exists
+            parts = domain.split('.')
+            if len(parts) >= 2:
+                return parts[-2].capitalize()
+            return domain.capitalize()
+        except:
+            return "Unknown Publication"
 
     def conduct_research(self, research_plan: Dict[str, Any], depth: int = MAX_RESEARCH_DEPTH) -> Dict[str, Any]:
         """
@@ -164,7 +208,7 @@ class ResearchAgent(BaseAgent):
             depth (int): Maximum depth of research to conduct
             
         Returns:
-            dict: Research findings
+            dict: Research findings with source information
         """
         ticker = research_plan.get("ticker")
         company_name = research_plan.get("company_name", ticker)
@@ -176,48 +220,83 @@ class ResearchAgent(BaseAgent):
             "market_position": {},
             "industry_analysis": {},
             "news_and_events": [],
-            "risk_factors": []
+            "risk_factors": [],
+            "_sources": {  # Track all sources used in the research
+                "search_queries": [],
+                "articles": []
+            }
         }
         
         # Get company overview
         company_query = f"{company_name} {ticker} company overview financial"
+        findings["_sources"]["search_queries"].append(company_query)
+        
         company_results = self.search_web(company_query, 3)
         if company_results and isinstance(company_results[0], dict) and "error" not in company_results[0]:
-            findings["company_overview"] = self.extract_article_content(company_results[0]["link"])
+            overview_article = self.extract_article_content(company_results[0]["link"])
+            findings["company_overview"] = overview_article
+            if "_source" in overview_article:
+                findings["_sources"]["articles"].append(overview_article["_source"])
         
         # Research recent financial performance
         financial_query = f"{company_name} {ticker} recent financial performance quarterly results"
+        findings["_sources"]["search_queries"].append(financial_query)
+        
         financial_results = self.search_web(financial_query, 5)
         for result in financial_results[:depth]:
             if isinstance(result, dict) and "link" in result:
                 article = self.extract_article_content(result["link"])
                 if "error" not in article:
                     findings["financial_insights"].append(article)
+                    if "_source" in article:
+                        findings["_sources"]["articles"].append(article["_source"])
         
         # Research industry trends
         industry = research_plan.get("industry", "")
         industry_query = f"{industry} industry trends market analysis {company_name}"
+        findings["_sources"]["search_queries"].append(industry_query)
+        
         industry_results = self.search_web(industry_query, 3)
         if industry_results and isinstance(industry_results[0], dict) and "link" in industry_results[0]:
-            findings["industry_analysis"] = self.extract_article_content(industry_results[0]["link"])
+            industry_article = self.extract_article_content(industry_results[0]["link"])
+            findings["industry_analysis"] = industry_article
+            if "_source" in industry_article:
+                findings["_sources"]["articles"].append(industry_article["_source"])
         
         # Get recent news
         news_query = f"{company_name} {ticker} recent news events last 3 months"
+        findings["_sources"]["search_queries"].append(news_query)
+        
         news_results = self.search_web(news_query, 5)
         for result in news_results[:depth]:
             if isinstance(result, dict) and "link" in result:
                 article = self.extract_article_content(result["link"])
                 if "error" not in article:
                     findings["news_and_events"].append(article)
+                    if "_source" in article:
+                        findings["_sources"]["articles"].append(article["_source"])
         
         # Research competitors
         competitors = research_plan.get("competitors", [])
         if competitors:
             competitors_str = ", ".join(competitors)
             comp_query = f"{company_name} vs {competitors_str} market comparison"
+            findings["_sources"]["search_queries"].append(comp_query)
+            
             comp_results = self.search_web(comp_query, 2)
             if comp_results and isinstance(comp_results[0], dict) and "link" in comp_results[0]:
-                findings["market_position"] = self.extract_article_content(comp_results[0]["link"])
+                comp_article = self.extract_article_content(comp_results[0]["link"])
+                findings["market_position"] = comp_article
+                if "_source" in comp_article:
+                    findings["_sources"]["articles"].append(comp_article["_source"])
+                
+        # Add metadata about the research process
+        findings["_meta"] = {
+            "research_date": self._get_current_date(),
+            "research_depth": depth,
+            "research_agent": "Market Researcher",
+            "research_plan_id": research_plan.get("id", "unknown")
+        }
                 
         return findings
         
@@ -230,7 +309,7 @@ class ResearchAgent(BaseAgent):
             research_plan (dict): Original research plan
             
         Returns:
-            dict: Analyzed research findings with key insights
+            dict: Analyzed research findings with key insights and citations
         """
         ticker = research_plan.get("ticker")
         company_name = research_plan.get("company_name", ticker)
@@ -245,6 +324,11 @@ class ResearchAgent(BaseAgent):
         Research Findings:
         {json.dumps(research_findings, indent=2)}
         
+        For each key insight you identify, include a citation to the source material.
+        Use the _source field from each article to provide proper attribution.
+        
+        Format your response with each insight containing both 'content' and 'citation' fields.
+        
         Extract:
         1. Key market trends affecting the company
         2. Competitive position analysis
@@ -252,19 +336,40 @@ class ResearchAgent(BaseAgent):
         4. Recent events that may impact financial performance
         5. Industry outlook and how it affects the company
         
-        Include citations to the source material when possible.
+        For each insight, include the citation in the following format: [Source: Publication Name, Date].
         """
         
         try:
             # Use instructor for structured output
             analysis = self._call_structured_llm(prompt, ResearchAnalysis)
+            analysis_dict = analysis.model_dump()
+            
+            # Ensure all insights have default citations if missing
+            for field in ["market_trends", "competitive_position", "recent_events"]:
+                if field in analysis_dict:
+                    for i, item in enumerate(analysis_dict[field]):
+                        if not item.get("citation"):
+                            analysis_dict[field][i]["citation"] = "Internal Analysis"
+            
+            # Check risks and opportunities
+            if "risks_opportunities" in analysis_dict:
+                for field in ["risks", "opportunities"]:
+                    if field in analysis_dict["risks_opportunities"]:
+                        for i, item in enumerate(analysis_dict["risks_opportunities"][field]):
+                            if not item.get("citation"):
+                                analysis_dict["risks_opportunities"][field][i]["citation"] = "Internal Analysis"
+            
+            # Check industry outlook
+            if "industry_outlook" in analysis_dict and not analysis_dict["industry_outlook"].get("citation"):
+                analysis_dict["industry_outlook"]["citation"] = "Internal Analysis"
             
             # Combine with original findings for a complete research package
             return {
                 "ticker": ticker,
                 "company_name": company_name,
                 "raw_findings": research_findings,
-                "analysis": analysis.model_dump()
+                "analysis": analysis_dict,
+                "sources": research_findings.get("_sources", {})
             }
             
         except Exception as e:

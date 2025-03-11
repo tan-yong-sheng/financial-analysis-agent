@@ -31,7 +31,7 @@ class DataCollectionAgent(BaseAgent):
             ticker (str): Company ticker symbol
             
         Returns:
-            dict: Company profile data
+            dict: Company profile data with source information
         """
         try:
             url = f"{self.base_url}/profile/{ticker}?apikey={self.api_key}"
@@ -42,11 +42,25 @@ class DataCollectionAgent(BaseAgent):
             if not profile_data or not isinstance(profile_data, list) or len(profile_data) == 0:
                 logger.warning(f"No profile data found for {ticker}")
                 return {"error": f"No company profile found for {ticker}"}
+            
+            # Add source information to the data    
+            result = profile_data[0]  # FMP returns a list with one item
+            result["_source"] = {
+                "name": "Financial Modeling Prep API",
+                "endpoint": f"profile/{ticker}",
+                "date_retrieved": self._get_current_date(),
+                "url": url.split('?')[0]  # Remove API key from URL
+            }
                 
-            return profile_data[0]  # FMP returns a list with one item
+            return result
         except requests.exceptions.RequestException as e:
             logger.error(f"Error fetching company profile for {ticker}: {str(e)}")
             return {"error": f"Failed to fetch company profile: {str(e)}"}
+    
+    def _get_current_date(self) -> str:
+        """Get current date as a string in ISO format."""
+        from datetime import datetime
+        return datetime.now().strftime("%Y-%m-%d")
     
     def get_income_statement(self, ticker: str, period: str = DEFAULT_PERIOD, limit: int = DEFAULT_LIMIT) -> List[Dict[str, Any]]:
         """Get income statement data."""
@@ -54,7 +68,21 @@ class DataCollectionAgent(BaseAgent):
             url = f"{self.base_url}/income-statement/{ticker}?period={period}&limit={limit}&apikey={self.api_key}"
             response = requests.get(url)
             response.raise_for_status()
-            return response.json()
+            data = response.json()
+            
+            # Add source information to each item
+            source_info = {
+                "name": "Financial Modeling Prep API",
+                "endpoint": f"income-statement/{ticker}",
+                "period": period,
+                "date_retrieved": self._get_current_date(),
+                "url": url.split('?')[0]  # Remove API key from URL
+            }
+            
+            for item in data:
+                item["_source"] = source_info
+                
+            return data
         except requests.exceptions.RequestException as e:
             logger.error(f"Error fetching income statement for {ticker}: {str(e)}")
             return [{"error": f"Failed to fetch income statement: {str(e)}"}]
@@ -65,7 +93,21 @@ class DataCollectionAgent(BaseAgent):
             url = f"{self.base_url}/balance-sheet-statement/{ticker}?period={period}&limit={limit}&apikey={self.api_key}"
             response = requests.get(url)
             response.raise_for_status()
-            return response.json()
+            data = response.json()
+            
+            # Add source information to each item
+            source_info = {
+                "name": "Financial Modeling Prep API",
+                "endpoint": f"balance-sheet-statement/{ticker}",
+                "period": period,
+                "date_retrieved": self._get_current_date(),
+                "url": url.split('?')[0]  # Remove API key from URL
+            }
+            
+            for item in data:
+                item["_source"] = source_info
+                
+            return data
         except requests.exceptions.RequestException as e:
             logger.error(f"Error fetching balance sheet for {ticker}: {str(e)}")
             return [{"error": f"Failed to fetch balance sheet: {str(e)}"}]
@@ -76,7 +118,21 @@ class DataCollectionAgent(BaseAgent):
             url = f"{self.base_url}/cash-flow-statement/{ticker}?period={period}&limit={limit}&apikey={self.api_key}"
             response = requests.get(url)
             response.raise_for_status()
-            return response.json()
+            data = response.json()
+            
+            # Add source information to each item
+            source_info = {
+                "name": "Financial Modeling Prep API",
+                "endpoint": f"cash-flow-statement/{ticker}",
+                "period": period,
+                "date_retrieved": self._get_current_date(),
+                "url": url.split('?')[0]  # Remove API key from URL
+            }
+            
+            for item in data:
+                item["_source"] = source_info
+                
+            return data
         except requests.exceptions.RequestException as e:
             logger.error(f"Error fetching cash flow statement for {ticker}: {str(e)}")
             return [{"error": f"Failed to fetch cash flow statement: {str(e)}"}]
@@ -91,21 +147,32 @@ class DataCollectionAgent(BaseAgent):
             time_period (int, optional): Time period for the indicator
             
         Returns:
-            dict: Technical indicators data
+            dict: Technical indicators data with source information
         """
         indicators = {}
         
         # If a specific indicator is requested
         if indicator_name:
             try:
-                # Fix the URL format for technical indicators
                 url = f"{self.base_url}/technical_indicator/daily/{ticker}?type={indicator_name}&period={time_period}&apikey={self.api_key}"
                 response = requests.get(url)
                 response.raise_for_status()
                 data = response.json()
-                # Add debug logging
-                logger.debug(f"Response for {indicator_name}: {data}")
-                return {"historical": data}
+                
+                # Add source information
+                source_info = {
+                    "name": "Financial Modeling Prep API",
+                    "endpoint": f"technical_indicator/daily/{ticker}",
+                    "indicator": indicator_name,
+                    "period": time_period,
+                    "date_retrieved": self._get_current_date(),
+                    "url": url.split('?')[0]  # Remove API key from URL
+                }
+                
+                return {
+                    "historical": data,
+                    "_source": source_info
+                }
             except requests.exceptions.RequestException as e:
                 logger.error(f"Error fetching {indicator_name} for {ticker}: {str(e)}")
                 return {"error": f"Failed to fetch {indicator_name}: {str(e)}"}
@@ -113,14 +180,25 @@ class DataCollectionAgent(BaseAgent):
         # If no specific indicator, fetch all from config
         for indicator in TECHNICAL_INDICATORS:
             try:
-                # Fix the URL format for technical indicators
                 url = f"{self.base_url}/technical_indicator/daily/{ticker}?type={indicator}&period={time_period}&apikey={self.api_key}"
                 response = requests.get(url)
                 response.raise_for_status()
                 data = response.json()
-                # Add debug logging
-                logger.debug(f"Response for {indicator}: {data}")
-                indicators[indicator] = {"historical": data}
+                
+                # Add source information
+                source_info = {
+                    "name": "Financial Modeling Prep API",
+                    "endpoint": f"technical_indicator/daily/{ticker}",
+                    "indicator": indicator,
+                    "period": time_period,
+                    "date_retrieved": self._get_current_date(),
+                    "url": url.split('?')[0]  # Remove API key from URL
+                }
+                
+                indicators[indicator] = {
+                    "historical": data,
+                    "_source": source_info
+                }
             except requests.exceptions.RequestException as e:
                 logger.error(f"Error fetching {indicator} for {ticker}: {str(e)}")
                 indicators[indicator] = {"error": f"Failed to fetch {indicator}: {str(e)}"}
@@ -268,13 +346,24 @@ class DataCollectionAgent(BaseAgent):
         
         data_plan = self.determine_data_needs(ticker, research_plan)
         return self.collect_company_data(ticker, data_plan)
+    
     def get_stock_price(self, ticker: str) -> Dict[str, Any]:
         """Get historical stock price data."""
         try:
             url = f"{self.base_url}/historical-price-full/{ticker}?apikey={self.api_key}"
             response = requests.get(url)
             response.raise_for_status()
-            return response.json()
+            data = response.json()
+            
+            # Add source information
+            data["_source"] = {
+                "name": "Financial Modeling Prep API",
+                "endpoint": f"historical-price-full/{ticker}",
+                "date_retrieved": self._get_current_date(),
+                "url": url.split('?')[0]  # Remove API key from URL
+            }
+            
+            return data
         except requests.exceptions.RequestException as e:
             logger.error(f"Error fetching stock price data for {ticker}: {str(e)}")
             return {"error": f"Failed to fetch stock price data: {str(e)}"}
@@ -285,7 +374,21 @@ class DataCollectionAgent(BaseAgent):
             url = f"{self.base_url}/key-metrics/{ticker}?period={period}&limit={limit}&apikey={self.api_key}"
             response = requests.get(url)
             response.raise_for_status()
-            return response.json()
+            data = response.json()
+            
+            # Add source information to each item
+            source_info = {
+                "name": "Financial Modeling Prep API",
+                "endpoint": f"key-metrics/{ticker}",
+                "period": period,
+                "date_retrieved": self._get_current_date(),
+                "url": url.split('?')[0]  # Remove API key from URL
+            }
+            
+            for item in data:
+                item["_source"] = source_info
+                
+            return data
         except requests.exceptions.RequestException as e:
             logger.error(f"Error fetching key metrics for {ticker}: {str(e)}")
             return [{"error": f"Failed to fetch key metrics: {str(e)}"}]
@@ -296,7 +399,21 @@ class DataCollectionAgent(BaseAgent):
             url = f"{self.base_url}/ratios/{ticker}?period={period}&limit={limit}&apikey={self.api_key}"
             response = requests.get(url)
             response.raise_for_status()
-            return response.json()
+            data = response.json()
+            
+            # Add source information to each item
+            source_info = {
+                "name": "Financial Modeling Prep API",
+                "endpoint": f"ratios/{ticker}",
+                "period": period,
+                "date_retrieved": self._get_current_date(),
+                "url": url.split('?')[0]  # Remove API key from URL
+            }
+            
+            for item in data:
+                item["_source"] = source_info
+                
+            return data
         except requests.exceptions.RequestException as e:
             logger.error(f"Error fetching financial ratios for {ticker}: {str(e)}")
             return [{"error": f"Failed to fetch financial ratios: {str(e)}"}]
@@ -307,7 +424,20 @@ class DataCollectionAgent(BaseAgent):
             url = f"{self.base_url}/analyst-estimates/{ticker}?apikey={self.api_key}"
             response = requests.get(url)
             response.raise_for_status()
-            return response.json()
+            data = response.json()
+            
+            # Add source information to each item
+            source_info = {
+                "name": "Financial Modeling Prep API",
+                "endpoint": f"analyst-estimates/{ticker}",
+                "date_retrieved": self._get_current_date(),
+                "url": url.split('?')[0]  # Remove API key from URL
+            }
+            
+            for item in data:
+                item["_source"] = source_info
+                
+            return data
         except requests.exceptions.RequestException as e:
             logger.error(f"Error fetching analyst estimates for {ticker}: {str(e)}")
             return [{"error": f"Failed to fetch analyst estimates: {str(e)}"}]

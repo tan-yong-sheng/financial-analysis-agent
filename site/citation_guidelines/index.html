@@ -13,10 +13,6 @@
       
       
       
-        <link rel="prev" href="../getting-started/">
-      
-      
-        <link rel="next" href="../usage/">
       
       
       <link rel="icon" href="../assets/images/favicon.png">
@@ -24,7 +20,7 @@
     
     
       
-        <title>Architecture - Financial Analysis Agent</title>
+        <title>Citation Guidelines for Financial Analysis - Financial Analysis Agent</title>
       
     
     
@@ -74,7 +70,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#system-architecture" class="md-skip">
+        <a href="#citation-guidelines-for-financial-analysis" class="md-skip">
           Skip to content
         </a>
       
@@ -108,7 +104,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              Architecture
+              Citation Guidelines for Financial Analysis
             
           </span>
         </div>
@@ -223,11 +219,9 @@
         
   
   
-    
   
-  
-    <li class="md-tabs__item md-tabs__item--active">
-      <a href="./" class="md-tabs__link">
+    <li class="md-tabs__item">
+      <a href="../architecture/" class="md-tabs__link">
         
   
     
@@ -437,31 +431,10 @@
       
   
   
-    
   
   
-  
-    <li class="md-nav__item md-nav__item--active">
-      
-      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
-      
-      
-        
-      
-      
-        <label class="md-nav__link md-nav__link--active" for="__toc">
-          
-  
-  <span class="md-ellipsis">
-    Architecture
-    
-  </span>
-  
-
-          <span class="md-nav__icon md-icon"></span>
-        </label>
-      
-      <a href="./" class="md-nav__link md-nav__link--active">
+    <li class="md-nav__item">
+      <a href="../architecture/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -471,62 +444,6 @@
   
 
       </a>
-      
-        
-
-<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
-  
-  
-  
-    
-  
-  
-    <label class="md-nav__title" for="__toc">
-      <span class="md-nav__icon md-icon"></span>
-      Table of contents
-    </label>
-    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
-      
-        <li class="md-nav__item">
-  <a href="#high-level-architecture" class="md-nav__link">
-    <span class="md-ellipsis">
-      High-Level Architecture
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#workflow" class="md-nav__link">
-    <span class="md-ellipsis">
-      Workflow
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#agent-communication" class="md-nav__link">
-    <span class="md-ellipsis">
-      Agent Communication
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#dependencies" class="md-nav__link">
-    <span class="md-ellipsis">
-      Dependencies
-    </span>
-  </a>
-  
-</li>
-      
-    </ul>
-  
-</nav>
-      
     </li>
   
 
@@ -1065,108 +982,60 @@
   
 
 
-<h1 id="system-architecture">System Architecture<a class="headerlink" href="#system-architecture" title="Permanent link">&para;</a></h1>
-<p>The <strong>Financial Analysis System</strong> is built using a modular <strong>multi-agent architecture</strong>, where each specialized agent handles a specific task in the financial analysis pipeline.</p>
-<h2 id="high-level-architecture">High-Level Architecture<a class="headerlink" href="#high-level-architecture" title="Permanent link">&para;</a></h2>
-<pre class="mermaid"><code>graph TB
-    %% Define styles
-    classDef agent fill:#E1F5FE,stroke:#0277BD,stroke-width:2px;
-    classDef tool fill:#E8F5E9,stroke:#2E7D32,stroke-width:2px;
-    classDef data fill:#F5F5F5,stroke:#616161,stroke-width:2px;
-
-    %% User Input
-    UserInput["User Input&lt;br/&gt;(Ticker Symbol)"]
-
-    %% Orchestrator
-    Orchestrator["Financial Analysis Orchestrator"]
-
-    %% Agents
-    PlannerAgent["Planner Agent"]:::agent
-    DataCollectionAgent["Data Collection&lt;br/&gt;Agent"]:::agent
-    ResearchAgent["Research Agent"]:::agent
-    AnalysisAgent["Analysis Agent"]:::agent
-    ReportAgent["Report Agent"]:::agent
-    FactCheckAgent["Fact Check Agent"]:::agent
-
-    %% Tools
-    FinancialProvider["Financial&lt;br/&gt;Data Provider"]:::tool
-    WebResearch["Web Research"]:::tool
-
-    %% Data
-    ResearchPlan["Research Plan"]:::data
-    FinancialData["Financial Data"]:::data
-    ResearchResults["Research Results"]:::data
-    AnalysisResults["Analysis Results"]:::data
-    Report["Report"]:::data
-    FinalReport["Final Report"]:::data
-
-    %% Flow
-    UserInput --&gt; Orchestrator
-    Orchestrator --&gt; PlannerAgent
-    Orchestrator --&gt; DataCollectionAgent
-    Orchestrator --&gt; ResearchAgent
-    Orchestrator --&gt; AnalysisAgent
-    Orchestrator --&gt; ReportAgent
-
-    PlannerAgent --&gt; ResearchPlan
-
-    DataCollectionAgent --&gt; FinancialProvider
-    FinancialProvider --&gt; FinancialData
-
-    ResearchAgent --&gt; WebResearch
-    WebResearch --&gt; ResearchResults
-
-    ResearchPlan --&gt; AnalysisAgent
-    FinancialData --&gt; AnalysisAgent
-    ResearchResults --&gt; AnalysisAgent
-    AnalysisAgent --&gt; AnalysisResults
-    AnalysisResults --&gt; ReportAgent
-    ReportAgent --&gt; Report
-    Report --&gt; FactCheckAgent
-    FactCheckAgent --&gt; FinalReport
-
-    %% Add subgraph for visual grouping
-    subgraph Agents
-        PlannerAgent
-        DataCollectionAgent
-        ResearchAgent
-        AnalysisAgent
-    end</code></pre>
-<p>📌 Little note to diagram above:</p>
-<ul>
-<li>🟦 Agents: Perform specialized tasks (e.g., data collection, analysis).</li>
-<li>🟩 Tools: External data sources or APIs used for research.</li>
-<li>⬜ Data: Structured outputs produced by agents.</li>
-</ul>
-<h2 id="workflow">Workflow<a class="headerlink" href="#workflow" title="Permanent link">&para;</a></h2>
-<p>The system follows this workflow:</p>
+<h1 id="citation-guidelines-for-financial-analysis">Citation Guidelines for Financial Analysis<a class="headerlink" href="#citation-guidelines-for-financial-analysis" title="Permanent link">&para;</a></h1>
+<p>This document outlines the citation system used in the Financial Analysis Agent to ensure transparency, reliability, and traceability of financial information.</p>
+<h2 id="source-types">Source Types<a class="headerlink" href="#source-types" title="Permanent link">&para;</a></h2>
+<p>The system tracks several types of sources:</p>
 <ol>
-<li><strong>Orchestrator</strong> receives a ticker symbol and initializes the process</li>
-<li><strong>Planner Agent</strong> creates a research plan tailored to the company</li>
-<li><strong>Data Collection Agent</strong> gathers financial data based on the plan</li>
-<li><strong>Research Agent</strong> conducts web research on the company and industry</li>
-<li><strong>Analysis Agent</strong> processes financial data and integrates research insights</li>
-<li><strong>Report Agent</strong> generates a comprehensive financial report</li>
-<li><strong>Fact Check Agent</strong> verifies the accuracy of the report</li>
-<li>After then, it delivers the final report</li>
+<li><strong>API Data Sources</strong></li>
+<li>Financial statement data from APIs</li>
+<li>Technical indicators</li>
+<li>
+<p>Company profile information</p>
+</li>
+<li>
+<p><strong>Research Sources</strong></p>
+</li>
+<li>News articles and press releases</li>
+<li>Analyst reports</li>
+<li>
+<p>Industry research</p>
+</li>
+<li>
+<p><strong>Generated Analysis</strong></p>
+</li>
+<li>Generated content marked with "Internal Analysis" citation</li>
 </ol>
-<h2 id="agent-communication">Agent Communication<a class="headerlink" href="#agent-communication" title="Permanent link">&para;</a></h2>
-<p>Agents communicate by passing structured data objects. Each agent takes specific inputs and produces outputs that other agents can consume:</p>
+<h2 id="citation-format">Citation Format<a class="headerlink" href="#citation-format" title="Permanent link">&para;</a></h2>
+<h3 id="financial-data-citations">Financial Data Citations<a class="headerlink" href="#financial-data-citations" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><span class="p">{</span>
+<span class="w">  </span><span class="nt">&quot;_source&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Financial Modeling Prep API&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;endpoint&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;income-statement/AAPL&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;period&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;annual&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;date_retrieved&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;2023-05-15&quot;</span>
+<span class="w">  </span><span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div>
+<h3 id="research-citations">Research Citations<a class="headerlink" href="#research-citations" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><span class="p">{</span>
+<span class="w">  </span><span class="nt">&quot;content&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Apple showed strong growth in services revenue...&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;citation&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Bloomberg Technology, 2023-04-12&quot;</span>
+<span class="p">}</span>
+</code></pre></div>
+<h2 id="implementation-details">Implementation Details<a class="headerlink" href="#implementation-details" title="Permanent link">&para;</a></h2>
+<ol>
+<li>The <code>DataCollectionAgent</code> attaches <code>_source</code> fields to all retrieved financial data</li>
+<li>The <code>ResearchAgent</code> uses <code>CitableItem</code> objects to pair content with citations</li>
+<li>The <code>AnalysisAgent</code> preserves citations when combining information</li>
+<li>The <code>ReportAgent</code> includes citations in the final report</li>
+</ol>
+<h2 id="best-practices">Best Practices<a class="headerlink" href="#best-practices" title="Permanent link">&para;</a></h2>
 <ul>
-<li><strong>Planner Agent</strong>: Takes ticker and company info, outputs research plan</li>
-<li><strong>Data Collection Agent</strong>: Takes ticker and research plan, outputs financial data</li>
-<li><strong>Research Agent</strong>: Takes ticker and company profile, outputs research results</li>
-<li><strong>Analysis Agent</strong>: Takes financial data and research results, outputs analysis</li>
-<li><strong>Report Agent</strong>: Takes analysis results, outputs draft report</li>
-<li><strong>Fact Check Agent</strong>: Takes draft report and data, outputs verified report</li>
-</ul>
-<h2 id="dependencies">Dependencies<a class="headerlink" href="#dependencies" title="Permanent link">&para;</a></h2>
-<p>The system relies on several external services and libraries:</p>
-<ul>
-<li><strong>Financial Data</strong>: Financial Modeling Prep API</li>
-<li><strong>Web Research</strong>: SerpAPI</li>
-<li><strong>Natural Language Processing</strong>: OpenAI's LLM API</li>
-<li><strong>Data Processing</strong>: Pandas and NumPy</li>
+<li>Always cite the original source of financial data</li>
+<li>Include retrieval dates for all financial information</li>
+<li>Distinguish between primary sources (SEC filings) and secondary sources</li>
+<li>Maintain the audit trail throughout the analysis pipeline</li>
 </ul>
 
 

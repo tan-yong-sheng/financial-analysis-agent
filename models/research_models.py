@@ -35,22 +35,42 @@ class ResearchPlan(BaseModel):
     research_sources: List[str] = Field(description="List of recommended data sources for the research", 
                                      default_factory=list)
 
+class CitableItem(BaseModel):
+    """Model for an item that can have a citation"""
+    content: str = Field(description="The content text")
+    citation: Optional[str] = Field(description="Citation source", default=None)
+
 class RisksOpportunities(BaseModel):
     """Model for risks and opportunities section of research analysis"""
-    risks: List[str] = Field(description="List of identified risks", 
-                          default_factory=list)
-    opportunities: List[str] = Field(description="List of identified opportunities", 
-                                  default_factory=list)
+    risks: List[CitableItem] = Field(description="List of identified risks", 
+                                default_factory=list)
+    opportunities: List[CitableItem] = Field(description="List of identified opportunities", 
+                                        default_factory=list)
 
 class ResearchAnalysis(BaseModel):
     """Model for the analysis of research findings"""
-    market_trends: List[str] = Field(description="Key market trends affecting the company", 
-                                  default_factory=list)
-    competitive_position: str = Field(description="Analysis of company's competitive position")
+    market_trends: List[CitableItem] = Field(description="Key market trends affecting the company", 
+                                        default_factory=list)
+    competitive_position: List[CitableItem] = Field(description="Analysis of company's competitive position",
+                                               default_factory=list)
     risks_opportunities: RisksOpportunities = Field(
         description="Major risks and opportunities", 
         default_factory=lambda: RisksOpportunities(risks=[], opportunities=[])
     )
-    recent_events: List[str] = Field(description="Recent events that may impact performance", 
-                                  default_factory=list)
-    industry_outlook: str = Field(description="Industry outlook and its effect on the company")
+    recent_events: List[CitableItem] = Field(description="Recent events that may impact performance", 
+                                        default_factory=list)
+    industry_outlook: CitableItem = Field(description="Industry outlook and its effect on the company",
+                                     default_factory=lambda: CitableItem(content="", citation=None))
+
+class SourceInfo(BaseModel):
+    """Model for tracking source information"""
+    name: str = Field(description="Name of the source")
+    type: str = Field(description="Type of source (API, article, search)")
+    date_retrieved: str = Field(description="Date the information was retrieved")
+    url: Optional[str] = Field(description="URL of the source if applicable", default=None)
+    details: Optional[Dict[str, Any]] = Field(description="Additional source details", default_factory=dict)
+    # Add financial-specific citation fields
+    filing_info: Optional[Dict[str, str]] = Field(
+        description="SEC filing information if applicable", 
+        default=None
+    )
