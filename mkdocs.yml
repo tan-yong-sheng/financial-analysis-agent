@@ -1,10 +1,10 @@
-site_name: Financial Analysis System
-site_description: Documentation for the AI-Powered Financial Analysis System
+site_name: Financial Analysis Agent
+site_description: Documentation for the AI-Powered Financial Analysis Agent
 site_author: Development Team
 
 # Repository
-repo_name: Financial Analysis System
-repo_url: https://github.com/tan-yong-sheng/financial-analysis-system
+repo_name: Financial Analysis Agent
+repo_url: https://github.com/tan-yong-sheng/financial-analysis-agent
 
 # Theme configuration
 theme:
