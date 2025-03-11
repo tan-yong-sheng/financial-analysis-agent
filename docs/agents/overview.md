@@ -1,60 +1,66 @@
-# Agents Overview
+# Agent System Overview
 
-## Agent System Architecture
+The Financial Analysis Agent uses a multi-agent architecture where specialized agents handle different aspects of the financial analysis workflow.
 
-The Financial Analysis Agent System uses a role-based approach where each agent specializes in specific tasks:
+## Agent Architecture
 
-### Base Agent
-All agents inherit from the BaseAgent class, which provides:
-- OpenAI integration
-- Conversation memory management
+The system divides responsibilities among specialized agents that work together:
+
+```
+┌───────────────────┐     ┌───────────────────┐     ┌───────────────────┐
+│                   │     │                   │     │                   │
+│  Data Collection  │────▶│     Research      │────▶│     Analysis      │
+│      Agent        │     │      Agent        │     │      Agent        │
+│                   │     │                   │     │                   │
+└───────────────────┘     └───────────────────┘     └───────────────────┘
+                                                            │
+                                                            ▼
+┌───────────────────┐     ┌───────────────────┐     ┌───────────────────┐
+│                   │     │                   │     │                   │
+│   Fact Check      │◀────│      Report       │◀────│    Orchestrator   │
+│      Agent        │     │      Agent        │     │                   │
+│                   │     │                   │     │                   │
+└───────────────────┘     └───────────────────┘     └───────────────────┘
+```
+
+## Core Agents
+
+### [Data Collection Agent](data_collection_agent.md)
+Retrieves financial data from various sources and attaches source information to all data.
+
+### [Research Agent](research_agent.md)
+Conducts market research, gathering information from web sources with proper citation tracking.
+
+### [Analysis Agent](analysis_agent.md)
+Analyzes financial data and research findings to generate insights while preserving citations.
+
+### [Report Agent](report_agent.md)
+Generates comprehensive reports from analysis results, maintaining citations for transparency.
+
+### [Fact Check Agent](fact_check_agent.md)
+Verifies facts and citations in the final report to ensure accuracy and completeness.
+
+## Agent Interaction
+
+Agents coordinate through the Orchestrator which:
+
+1. Manages the workflow between agents
+2. Passes data and results between agents
+3. Ensures source information and citations are preserved throughout
+
+## BaseAgent Class
+
+All agents inherit from the `BaseAgent` class which provides:
+
+- Standard LLM interaction methods
+- Structured output capabilities
+- Memory management 
 - Error handling
-- Common utilities
+- Observability and logging
 
-### Specialized Agents
+## Agent System Benefits
 
-1. **Planner Agent**
-   - Research planning
-   - Task organization
-   - Strategy development
-
-2. **Data Collection Agent**
-   - Financial data gathering
-   - API interactions
-   - Data validation
-
-3. **Research Agent**
-   - Web research
-   - News analysis
-   - Competitor analysis
-
-4. **Analysis Agent**
-   - Financial analysis
-   - Data interpretation
-   - Insight generation
-
-5. **Report Agent**
-   - Report generation
-   - Content structuring
-   - Data visualization
-
-6. **Fact Check Agent**
-   - Data validation
-   - Citation checking
-   - Quality assurance
-
-## Agent Communication
-
-Agents communicate through structured data formats:
-- JSON for data exchange
-- Markdown for report content
-- Standardized error formats
-
-## Adding New Agents
-
-To create a new agent:
-
-1. Inherit from BaseAgent
-2. Implement required methods
-3. Add to orchestrator
-4. Update configuration
+- **Specialization**: Each agent focuses on its specific domain
+- **Composability**: Agents can be used individually or as part of the workflow
+- **Traceability**: Information flows are clear and attributable
+- **Extensibility**: New agent types can be added to extend system capabilities

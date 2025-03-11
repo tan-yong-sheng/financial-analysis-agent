@@ -1,113 +1,38 @@
 # System Architecture
 
-The **Financial Analysis System** is built using a modular **multi-agent architecture**, where each specialized agent handles a specific task in the financial analysis pipeline.
+The Financial Analysis Agent is built on a modular, multi-agent architecture designed for extensibility and maintainability.
 
-## High-Level Architecture
+## Core Components
 
 ```mermaid
 graph TB
-    %% Define styles
-    classDef agent fill:#E1F5FE,stroke:#0277BD,stroke-width:2px;
-    classDef tool fill:#E8F5E9,stroke:#2E7D32,stroke-width:2px;
-    classDef data fill:#F5F5F5,stroke:#616161,stroke-width:2px;
-
-    %% User Input
-    UserInput["User Input<br/>(Ticker Symbol)"]
-
-    %% Orchestrator
-    Orchestrator["Financial Analysis Orchestrator"]
+    O[Orchestrator] --> DC[Data Collection Agent]
+    O --> R[Research Agent]
+    O --> A[Analysis Agent]
+    O --> RP[Report Agent]
+    O --> FC[Fact Check Agent]
     
-    %% Agents
-    PlannerAgent["Planner Agent"]:::agent
-    DataCollectionAgent["Data Collection<br/>Agent"]:::agent
-    ResearchAgent["Research Agent"]:::agent
-    AnalysisAgent["Analysis Agent"]:::agent
-    ReportAgent["Report Agent"]:::agent
-    FactCheckAgent["Fact Check Agent"]:::agent
-    
-    %% Tools
-    FinancialProvider["Financial<br/>Data Provider"]:::tool
-    WebResearch["Web Research"]:::tool
-    
-    %% Data
-    ResearchPlan["Research Plan"]:::data
-    FinancialData["Financial Data"]:::data
-    ResearchResults["Research Results"]:::data
-    AnalysisResults["Analysis Results"]:::data
-    Report["Report"]:::data
-    FinalReport["Final Report"]:::data
-
-    %% Flow
-    UserInput --> Orchestrator
-    Orchestrator --> PlannerAgent
-    Orchestrator --> DataCollectionAgent
-    Orchestrator --> ResearchAgent
-    Orchestrator --> AnalysisAgent
-    Orchestrator --> ReportAgent
-    
-    PlannerAgent --> ResearchPlan
-    
-    DataCollectionAgent --> FinancialProvider
-    FinancialProvider --> FinancialData
-    
-    ResearchAgent --> WebResearch
-    WebResearch --> ResearchResults
-    
-    ResearchPlan --> AnalysisAgent
-    FinancialData --> AnalysisAgent
-    ResearchResults --> AnalysisAgent
-    AnalysisAgent --> AnalysisResults
-    AnalysisResults --> ReportAgent
-    ReportAgent --> Report
-    Report --> FactCheckAgent
-    FactCheckAgent --> FinalReport
-
-    %% Add subgraph for visual grouping
-    subgraph Agents
-        PlannerAgent
-        DataCollectionAgent
-        ResearchAgent
-        AnalysisAgent
-    end
+    DC --> FDP[Financial Data Provider]
+    R --> WR[Web Research Tool]
+    A --> FA[Financial Analyzer]
+    RP --> T[Templates]
 ```
 
+## Data Flow
 
-📌 Little note to diagram above:
+1. **Data Collection**: Financial statements, metrics, prices
+2. **Research**: Market analysis, news, competitor data
+3. **Analysis**: Integration and insight generation
+4. **Reporting**: Report generation with citations
+5. **Fact Checking**: Validation and verification
 
-- 🟦 Agents: Perform specialized tasks (e.g., data collection, analysis).
-- 🟩 Tools: External data sources or APIs used for research.
-- ⬜ Data: Structured outputs produced by agents.
+## Design Principles
 
-## Workflow
+- **Modularity**: Independent, specialized agents
+- **Observability**: Comprehensive logging and tracing
+- **Reliability**: Robust error handling and validation
+- **Extensibility**: Easy to add new capabilities
 
-The system follows this workflow:
-
-1. **Orchestrator** receives a ticker symbol and initializes the process
-2. **Planner Agent** creates a research plan tailored to the company
-3. **Data Collection Agent** gathers financial data based on the plan
-4. **Research Agent** conducts web research on the company and industry
-5. **Analysis Agent** processes financial data and integrates research insights
-6. **Report Agent** generates a comprehensive financial report
-7. **Fact Check Agent** verifies the accuracy of the report
-8. After then, it delivers the final report
-
-
-## Agent Communication
-
-Agents communicate by passing structured data objects. Each agent takes specific inputs and produces outputs that other agents can consume:
-
-- **Planner Agent**: Takes ticker and company info, outputs research plan
-- **Data Collection Agent**: Takes ticker and research plan, outputs financial data
-- **Research Agent**: Takes ticker and company profile, outputs research results
-- **Analysis Agent**: Takes financial data and research results, outputs analysis
-- **Report Agent**: Takes analysis results, outputs draft report
-- **Fact Check Agent**: Takes draft report and data, outputs verified report
-
-## Dependencies
-
-The system relies on several external services and libraries:
-
-- **Financial Data**: Financial Modeling Prep API
-- **Web Research**: SerpAPI
-- **Natural Language Processing**: OpenAI's LLM API
-- **Data Processing**: Pandas and NumPy
+For detailed information about each component, see:
+- [Agent System](components/agent-system.md)
+- [Citation System](components/citation-system.md)

@@ -1,57 +1,91 @@
-# Agent System Architecture
+# Agent System
 
-## Overview
+The Agent System is the core architecture of the Financial Analysis Agent, providing the framework for specialized agents to work together.
 
-The Financial Analysis Agent System uses a role-based architecture with specialized agents working together to perform comprehensive financial analysis. Each agent has specific responsibilities and expertise.
+## Architecture Overview
 
-## Core Agents
+The agent system follows a modular design where each agent has specific responsibilities:
 
-### Planner Agent
-- Creates comprehensive research plans
-- Determines analysis requirements
-- Structures the research approach
-
-### Data Collection Agent
-- Gathers financial data from APIs
-- Collects historical market data
-- Retrieves company information
-
-### Research Agent
-- Conducts web research
-- Analyzes news and market sentiment
-- Researches industry trends
-
-### Analysis Agent
-- Performs financial analysis
-- Generates insights from data
-- Integrates various data sources
-
-### Report Agent
-- Creates structured reports
-- Formats analysis results
-- Ensures clear communication
-
-### Fact Check Agent
-- Validates data accuracy
-- Verifies citations
-- Ensures report quality
-
-## Agent Interaction Flow
-
-```mermaid
-graph TD
-    A[Planner Agent] --> B[Data Collection Agent]
-    A --> C[Research Agent]
-    B --> D[Analysis Agent]
-    C --> D
-    D --> E[Report Agent]
-    E --> F[Fact Check Agent]
-    F --> E
+```
+           ┌─────────────────┐
+           │                 │
+           │   Orchestrator  │
+           │                 │
+           └────────┬────────┘
+                    │
+      ┌─────────────┼─────────────┐
+      │             │             │
+┌─────▼───┐   ┌─────▼───┐   ┌─────▼───┐
+│         │   │         │   │         │
+│ Agent 1 │   │ Agent 2 │   │ Agent 3 │
+│         │   │         │   │         │
+└─────────┘   └─────────┘   └─────────┘
 ```
 
-## System Benefits
+## BaseAgent Implementation
 
-1. **Specialized Expertise**: Each agent focuses on specific tasks
-2. **Quality Control**: Built-in validation and fact-checking
-3. **Scalability**: Easy to add new agents or modify existing ones
-4. **Maintainability**: Modular design for easy updates
+All agents inherit from the `BaseAgent` class:
+
+```python
+class BaseAgent:
+    def __init__(self, role: str, name: str):
+        self.role = role
+        self.name = name
+        
+    def _call_llm(self, prompt: str) -> str:
+        """Call LLM with prompt and return response."""
+        
+    def _call_structured_llm(self, prompt: str, response_model: Type[T]) -> T:
+        """Call LLM with prompt and return structured response."""
+        
+    def process(self, input_data: Any) -> Any:
+        """Process input data according to agent's role."""
+```
+
+## Agent Communication
+
+Agents communicate through structured data exchanges:
+
+1. Each agent takes input data in a standardized format
+2. Each agent returns output data in a standardized format
+3. The orchestrator ensures data compatibility between agents
+
+## Agent Types
+
+The system includes the following agent types:
+
+- **Data Collection Agent**: Gathers financial data
+- **Research Agent**: Conducts market research
+- **Analysis Agent**: Analyzes financial data
+- **Report Agent**: Generates reports
+- **Fact Check Agent**: Validates report accuracy
+
+## Extending the Agent System
+
+To create a new agent type:
+
+1. Inherit from the `BaseAgent` class
+2. Define specialized methods for the agent's role
+3. Implement the `process` method to handle input and produce output
+
+Example:
+
+```python
+class CustomAgent(BaseAgent):
+    def __init__(self):
+        super().__init__("custom role description", "Custom Agent")
+        
+    def specialized_method(self):
+        # Custom functionality...
+        
+    def process(self, input_data: Dict[str, Any]) -> Dict[str, Any]:
+        # Process logic...
+        return result
+```
+
+## Agent System Benefits
+
+- **Modularity**: Each agent has a single responsibility
+- **Testability**: Agents can be tested in isolation
+- **Maintainability**: Changes to one agent don't affect others
+- **Flexibility**: Agents can be swapped or modified independently

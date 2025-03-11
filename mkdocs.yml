@@ -23,55 +23,61 @@ theme:
   icon:
     repo: fontawesome/brands/github
 
-# Add plugins
-plugins:
-  - search
-
 # Extensions
 markdown_extensions:
+  - pymdownx.highlight:
+      anchor_linenums: true
+  - pymdownx.superfences
+  - pymdownx.inlinehilite
+  - pymdownx.snippets
+  - pymdownx.tabbed:
+      alternate_style: true
   - admonition
-  - codehilite:
-      guess_lang: false
+  - tables
+  - footnotes
   - toc:
       permalink: true
-  - pymdownx.tabbed
-  - pymdownx.superfences:
-      custom_fences:
-        - name: mermaid
-          class: mermaid
-          format: !!python/name:pymdownx.superfences.fence_code_format
-        - name: graphviz
-          class: graphviz
-          format: !!python/name:pymdownx.superfences.fence_code_format
-  - pymdownx.details
-  - pymdownx.emoji:
-      emoji_index: !!python/name:material.extensions.emoji.twemoji
-      emoji_generator: !!python/name:material.extensions.emoji.to_svg
-  - attr_list
-  - md_in_html
 
 # Navigation structure
 nav:
   - Home: index.md
-  - Getting Started: getting-started.md
-  - Architecture: architecture.md
-  - Usage Guide: usage.md
+  - Getting Started:
+    - Getting Started: getting-started.md
+    - Installation: getting-started/installation.md
+    - Configuration: getting-started/configuration.md
+    - Quick Start: getting-started/quickstart.md
+    - Troubleshooting: getting-started/troubleshooting.md
+  - Architecture:
+    - Overview: architecture.md
+    - Agent System: components/agent-system.md
+    - Citation System: components/citation-system.md
   - Agents:
-    - Overview: agents/index.md
-    - Planner Agent: agents/planner_agent.md
+    - Overview: agents/overview.md
     - Data Collection Agent: agents/data_collection_agent.md
     - Research Agent: agents/research_agent.md
     - Analysis Agent: agents/analysis_agent.md
     - Report Agent: agents/report_agent.md
     - Fact Check Agent: agents/fact_check_agent.md
-  - Modules:
-    - Overview: modules/index.md
-    - Financial Analyzer: modules/financial_analyzer.md
-    - Data Collector: modules/data_collector.md
+    - Planner Agent: agents/planner_agent.md
   - Tools:
     - Overview: tools/index.md
     - Data Transformer: tools/data_transformer.md
     - Financial Data Provider: tools/financial_data_provider.md
-    - Web Research Tool: tools/web_research.md
-  - API Reference: api-reference.md
+    - Web Research: tools/web_research.md
+  - Testing:
+    - Overview: testing/index.md
+    - Writing Tests: testing/writing-tests.md
+    - Coverage: testing/coverage.md
+  - Guides:
+    - Usage: usage.md
+    - Testing: guides/testing.md
+    - Observability: guides/observability.md
+    - Customization: guides/customization.md
+    - Citation Guidelines: citation_guidelines.md
+  - API Reference:
+    - Agents API: api/agents.md
+    - Tools API: api/tools.md
+    - Complete Reference: api-reference.md
+  - Examples:
+    - Basic Usage: examples/basic-usage.md
   - Contributing: contributing.md

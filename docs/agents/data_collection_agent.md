@@ -1,6 +1,6 @@
 # Data Collection Agent
 
-The Data Collection Agent is responsible for gathering financial data from various sources, primarily through financial APIs. It works with the Financial Data Provider tool to retrieve comprehensive financial information about companies.
+The Data Collection Agent is responsible for gathering financial data from various sources, primarily through financial APIs. It works with the Financial Data Provider tool to retrieve comprehensive financial information about companies with robust source tracking.
 
 ## Functionality
 
@@ -9,7 +9,8 @@ The Data Collection Agent:
 1. Receives a ticker symbol and a research plan
 2. Determines what specific data needs to be collected based on the plan
 3. Retrieves financial statements, price data, technical indicators, and other metrics
-4. Returns structured financial data for analysis
+4. Attaches source information to all retrieved data
+5. Returns structured financial data for analysis with complete provenance information
 
 ## Implementation
 
@@ -37,6 +38,25 @@ class DataCollectionAgent(BaseAgent):
         # Implementation details...
 ```
 
+## Source Tracking
+
+All data collected by this agent is enriched with source information using the `_source` field:
+
+```python
+result["_source"] = {
+    "name": "Financial Modeling Prep API",
+    "endpoint": f"profile/{ticker}",
+    "date_retrieved": self._get_current_date(),
+    "url": url.split('?')[0]  # Remove API key from URL
+}
+```
+
+This source tracking enables:
+- Proper attribution in final reports
+- Data provenance verification
+- Audit trails for compliance purposes
+- Freshness assessment of financial information
+
 ## Input
 
 The Data Collection Agent takes a JSON object containing:
@@ -58,95 +78,92 @@ The Data Collection Agent takes a JSON object containing:
 
 ## Output
 
-The Data Collection Agent produces structured financial data:
+The Data Collection Agent produces structured financial data with source information:
 
 ```json
 {
   "ticker": "AAPL",
-  "company_profile": [{
+  "company_profile": {
     "companyName": "Apple Inc.",
     "sector": "Technology",
     "industry": "Consumer Electronics",
     "price": 182.63,
     "mktCap": 2845000000000,
-    "beta": 1.28
-  }],
+    "beta": 1.28,
+    "_source": {
+      "name": "Financial Modeling Prep API",
+      "endpoint": "profile/AAPL",
+      "date_retrieved": "2023-05-15",
+      "url": "https://financialmodelingprep.com/api/v3/profile/AAPL"
+    }
+  },
   "income_statement": [
     {
       "date": "2023-09-30",
       "revenue": 383946000000,
       "grossProfit": 170782000000,
-      "netIncome": 96995000000
+      "netIncome": 96995000000,
+      "_source": {
+        "name": "Financial Modeling Prep API",
+        "endpoint": "income-statement/AAPL",
+        "period": "annual",
+        "date_retrieved": "2023-05-15",
+        "url": "https://financialmodelingprep.com/api/v3/income-statement/AAPL"
+      }
     },
-    {
-      "date": "2022-09-30",
-      "revenue": 394328000000,
-      "grossProfit": 170782000000,
-      "netIncome": 99803000000
-    }
+    // Additional periods...
   ],
-  "balance_sheet": [
-    {
-      "date": "2023-09-30",
-      "totalAssets": 352583000000,
-      "totalLiabilities": 290448000000,
-      "totalStockholdersEquity": 62135000000,
-      "cashAndCashEquivalents": 29965000000
-    }
-  ],
-  "technical_indicators": {
-    "sma": {
-      "historical": [
-        {
-          "date": "2023-12-15",
-          "sma": 187.32
-        }
-      ]
-    },
-    "rsi": {
-      "historical": [
-        {
-          "date": "2023-12-15",
-          "rsi": 54.78
-        }
-      ]
-    }
-  }
+  // Additional financial data...
 }
 ```
 
 ## Key Methods
 
+### `get_company_profile(ticker)`
+
+Retrieves company profile information with source tracking:
+
+```python
+def get_company_profile(self, ticker: str) -> Dict[str, Any]:
+    # API call implementation...
+    
+    # Add source information to data
+    result["_source"] = {
+        "name": "Financial Modeling Prep API",
+        "endpoint": f"profile/{ticker}",
+        "date_retrieved": self._get_current_date(),
+        "url": url.split('?')[0]
+    }
+        
+    return result
+```
+
 ### `determine_data_needs(ticker, research_plan)`
 
-Uses LLM to analyze the research plan and determine what specific data needs to be collected:
-
-1. Identifies which financial statements are needed
-2. Determines what period and limit settings to use
-3. Lists technical indicators to calculate
-4. Specifies ratios and metrics that should be collected
-5. Identifies any competitor tickers that should also be analyzed
+Uses LLM to analyze the research plan and determine what specific data needs to be collected.
 
 ### `collect_company_data(ticker, data_plan)`
 
-Executes the data collection plan by:
+Collects all required data according to the data plan, with source information attached to each data component.
 
-1. Retrieving company profile information
-2. Collecting required financial statements (income statement, balance sheet, cash flow)
-3. Getting key metrics and financial ratios
-4. Calculating technical indicators
-5. Retrieving analyst estimates and stock price data
-6. Optionally collecting data for competitor companies
+### `get_technical_indicators(ticker, indicator_name, time_period)`
 
-### `process(input_data)`
+Retrieves technical indicators with proper source attribution:
 
-The main entry point that:
-
-1. Validates the input data
-2. Extracts the ticker symbol and research plan
-3. Determines the data collection needs
-4. Executes the data collection
-5. Returns the comprehensive financial data
+```python
+def get_technical_indicators(self, ticker: str, indicator_name: str = None, time_period: int = 14) -> Dict[str, Any]:
+    # Implementation details...
+    
+    # Add source information
+    source_info = {
+        "name": "Financial Modeling Prep API",
+        "endpoint": f"technical_indicator/daily/{ticker}",
+        "indicator": indicator_name,
+        "period": time_period,
+        "date_retrieved": self._get_current_date(),
+        "url": url.split('?')[0]
+    }
+```
 
 ## Data Sources
 
@@ -160,6 +177,14 @@ The agent handles various data collection errors:
 2. API rate limits or connectivity issues
 3. Incomplete or missing financial statements
 4. Timeouts during data retrieval
+
+## Observability
+
+Data collection operations are logged with:
+- Source endpoint information
+- Result summaries
+- Timestamps
+- Error conditions
 
 ## Example Usage
 
@@ -182,7 +207,8 @@ input_data = {
 # Collect the financial data
 financial_data = collector.process(input_data)
 
-# Access specific data
+# Access specific data with source information
 income_statement = financial_data.get("income_statement", [])
 print(f"Latest revenue: ${income_statement[0]['revenue'] / 1000000000:.2f} billion")
+print(f"Source: {income_statement[0]['_source']['name']}, Retrieved: {income_statement[0]['_source']['date_retrieved']}")
 ```

@@ -1,47 +1,40 @@
-# Welcome to Financial Analysis Agent
+# Financial Analysis Agent
 
-This is your documentation homepage. Start adding your content here!
+An AI-powered financial analysis tool that automates comprehensive stock research, statement analysis, and report generation with robust source tracking and citation management.
 
 ## Overview
 
-The Financial Analysis Agent is designed to:
+The Financial Analysis Agent system provides automated financial analysis for publicly traded companies. It collects financial data, conducts market research, performs quantitative and qualitative analysis, and generates comprehensive reports with proper source citations.
 
-- Automatically collect financial data for publicly traded companies
-- Analyze financial statements and calculate key metrics
-- Research industry trends and competitor analysis
-- Generate professional financial research reports
-- Fact-check reports for accuracy
+## Key Features
 
-The system uses a multi-agent architecture where specialized agents work together to produce high-quality financial analysis reports.
+- **End-to-end financial analysis pipeline**: From data collection to final report generation
+- **Multi-agent architecture**: Specialized agents for different analysis stages
+- **Source-tracked financial data**: All financial information includes provenance details
+- **Citation management**: Insights include traceable citations to source materials
+- **Extensive observability**: Comprehensive logging and tracing throughout the system
+- **Customizable research plans**: Tailored analysis based on company and industry
+- **Technical and fundamental analysis**: Combines multiple analysis approaches
 
-## Key Components
+## System Architecture
 
-### Agents
+The system consists of several specialized agents:
 
-The system is built around specialized agents that handle different aspects of the financial analysis workflow:
-
-- **Planner Agent**: Creates research plans tailored to specific companies and industries
-- **Data Collection Agent**: Gathers financial data from APIs and other sources
-- **Research Agent**: Conducts web research on industry trends and market news
-- **Analysis Agent**: Analyzes financial data to extract insights and identify trends
-- **Writer Agent**: Generates well-structured, professional financial reports
-- **Fact Check Agent**: Validates the accuracy of the financial report content
-
-### Modules
-
-Core functionality is implemented in focused modules:
-
-- **Financial Analyzer**: Processes and analyzes financial data
-- **Data Collector**: Interfaces with financial data APIs
-
-### Tools
-
-Helper utilities that support the core functionality:
-
-- **Data Transformer**: Handles data conversion and cleaning
-- **Financial Data Provider**: Communicates with financial data APIs
-- **Web Research Tool**: Facilitates web searches for research
+1. **Data Collection Agent**: Gathers financial data with source tracking
+2. **Research Agent**: Conducts market research with citation management
+3. **Analysis Agent**: Analyzes financial data and research findings
+4. **Report Agent**: Generates comprehensive financial reports
+5. **Fact Check Agent**: Validates analysis and ensures proper citations
 
 ## Getting Started
 
-See the [Getting Started](getting-started.md) guide to set up the system and run your first financial analysis.
+See the [Getting Started Guide](getting-started.md) for an overview and the [Installation Guide](getting-started/installation.md) for setup instructions.
+
+## Documentation Sections
+
+- **[Architecture](architecture.md)**: System design and components
+- **[Agents](agents/overview.md)**: Details on each specialized agent
+- **[Tools](tools/index.md)**: Utility tools documentation
+- **[Testing](testing/index.md)**: Testing approach and framework
+- **[Guides](guides/customization.md)**: Usage and customization guides
+- **[API Reference](api-reference.md)**: Technical API documentation

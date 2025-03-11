@@ -1,15 +1,17 @@
 # Research Agent
 
-The Research Agent is responsible for conducting web research to gather information about companies, industries, and market trends. It uses search APIs to find and analyze relevant news, articles, and data.
+The Research Agent is responsible for conducting market research, gathering information about companies and industries, and synthesizing this information into actionable insights with robust citation tracking.
 
 ## Functionality
 
 The Research Agent:
 
-1. Receives a company ticker, profile information, and research plan
-2. Performs targeted web searches for company news, industry trends, and competitor information
-3. Analyzes and summarizes the research findings
-4. Returns structured research results
+1. Creates a comprehensive research plan for a company
+2. Searches for relevant information across various sources
+3. Extracts and synthesizes key findings from articles and reports
+4. Analyzes research findings to identify key insights and trends
+5. Ensures all insights are properly cited to their sources
+6. Returns research results with full citation information
 
 ## Implementation
 
@@ -22,27 +24,46 @@ class ResearchAgent(BaseAgent):
     def __init__(self, base_url: str = None, model_name: str = None):
         role = "a financial research specialist that gathers relevant market news and industry information"
         super().__init__(role, "Research Specialist", base_url=base_url, model_name=model_name)
-        self.research_tool = WebResearchTool()
+        self.tracer = AgentTracer("Market Researcher", structured_logger)
     
-    def web_search(self, query: str, num_results: int = MAX_SEARCH_RESULTS) -> List[Dict[str, Any]]:
-        """Perform a web search using the web research tool."""
+    def create_research_plan(self, input_data: Dict[str, Any]) -> Dict[str, Any]:
+        """Create a comprehensive research plan for a company."""
         # Implementation details...
     
-    def research_company_news(self, ticker: str, company_name: str) -> List[Dict[str, Any]]:
-        """Research recent news about a company."""
+    def search_web(self, query: str, num_results: int = MAX_SEARCH_RESULTS) -> List[Dict[str, Any]]:
+        """Perform a web search with source tracking."""
         # Implementation details...
     
-    def research_industry_trends(self, industry: str, sector: str) -> Dict[str, Any]:
-        """Research industry trends."""
+    def extract_article_content(self, url: str) -> Dict[str, Any]:
+        """Extract and summarize content from a URL with source information."""
         # Implementation details...
-    
-    def research_competitors(self, ticker: str, company_name: str, industry: str) -> Dict[str, Any]:
-        """Research company competitors."""
-        # Implementation details...
-    
-    def process(self, input_data: Dict[str, Any]) -> Dict[str, Any]:
-        """Process the research request for a company."""
-        # Implementation details...
+        
+    # Additional methods...
+```
+
+## Citation Management
+
+The Research Agent maintains detailed citation information for all research findings:
+
+```python
+# Add source information
+result["_source"] = {
+    "type": "article",
+    "url": url,
+    "extraction_date": self._get_current_date(),
+    "publication_name": self._extract_publication_name(url),
+    "publication_date": result.get("publication_date", "Unknown"),
+    "citation_format": f"{result.get('title')}. {self._extract_publication_name(url)}. {result.get('publication_date', 'n.d.')}. Retrieved from {url}"
+}
+```
+
+Each insight is modeled as a `CitableItem` containing both content and citation:
+
+```python
+class CitableItem(BaseModel):
+    """Model for an item that can have a citation"""
+    content: str = Field(description="The content text")
+    citation: Optional[str] = Field(description="Citation source", default=None)
 ```
 
 ## Input
@@ -52,121 +73,145 @@ The Research Agent takes a JSON object containing:
 ```json
 {
   "ticker": "AAPL",
-  "company_profile": [{
+  "company_data": {
     "companyName": "Apple Inc.",
     "sector": "Technology",
-    "industry": "Consumer Electronics"
-  }],
+    "industry": "Consumer Electronics",
+    "description": "Apple Inc. designs, manufactures, and markets smartphones, personal computers, tablets, wearables, and accessories worldwide."
+  },
   "research_plan": {
-    "industry_research": {
-      "key_competitors": ["Samsung", "Xiaomi", "Google"],
-      "market_trends": ["Smartphone market saturation", "Services growth"]
-    }
+    "key_areas": ["financial_performance", "market_position", "industry_trends"],
+    "metrics": ["revenue_growth", "profit_margins", "market_share"],
+    "competitors": ["MSFT", "GOOG", "AMZN"],
+    "questions": ["How is Apple positioned in the AI market?", "What are the key risks?"]
   }
 }
 ```
 
 ## Output
 
-The Research Agent produces structured research results:
+The Research Agent produces structured research findings with citations:
 
 ```json
 {
-  "company_news": [
-    {
-      "title": "Apple Unveils New AI Features for iPhone",
-      "source": "TechCrunch",
-      "url": "https://techcrunch.com/apple-ai-features",
-      "date": "2023-12-10",
-      "summary": "Apple announced new AI capabilities coming to iPhones next year, including improved Siri and on-device processing.",
-      "impact": "Medium"
-    }
-  ],
-  "industry_trends": {
-    "key_trends": [
+  "ticker": "AAPL",
+  "company_name": "Apple Inc.",
+  "analysis": {
+    "market_trends": [
       {
-        "trend": "AI Integration in Consumer Electronics",
-        "description": "Companies are increasingly integrating AI capabilities into consumer electronics.",
-        "impact": "Major shift in product development strategies."
+        "content": "The smartphone market is experiencing slowing growth globally, with a 2% decline in shipments in Q2 2023.",
+        "citation": "IDC Market Report, 2023-06-15"
+      },
+      {
+        "content": "AI-enabled devices are seeing increased consumer demand, with a 15% premium over standard devices.",
+        "citation": "TechAnalyst.com, 2023-07-22"
       }
     ],
-    "growth_prospects": {
-      "short_term": "Moderate growth expected due to economic uncertainties.",
-      "long_term": "Strong growth projected driven by AI, AR, and new form factors."
+    "competitive_position": [
+      {
+        "content": "Apple maintains premium positioning with 42% market share in the high-end smartphone segment.",
+        "citation": "MarketWatch Industry Analysis, 2023-08-10"
+      }
+    ],
+    "risks_opportunities": {
+      "risks": [
+        {
+          "content": "Supply chain constraints in semiconductor components may impact production capacity.",
+          "citation": "Bloomberg Supply Chain Report, 2023-07-05"
+        }
+      ],
+      "opportunities": [
+        {
+          "content": "Expansion into healthcare wearables presents a significant growth opportunity.",
+          "citation": "HealthTech Insights, 2023-08-01"
+        }
+      ]
     },
-    "challenges": [
-      "Supply chain constraints",
-      "Increasing component costs",
-      "Regulatory scrutiny"
-    ]
-  },
-  "competitor_analysis": {
-    "competitors": [
+    "recent_events": [
       {
-        "name": "Samsung Electronics",
-        "ticker": "005930.KS",
-        "market_share": "19%",
-        "strengths": ["Vertical integration", "Display technology leadership"],
-        "weaknesses": ["Software ecosystem fragmentation", "Lower brand premium"]
+        "content": "Apple announced new AI features for iOS at their developer conference.",
+        "citation": "TechCrunch, 2023-06-06"
       }
     ],
-    "competitive_analysis": {
-      "apple_advantages": ["Ecosystem lock-in", "Brand premium", "Service revenue growth"],
-      "apple_disadvantages": ["Higher price points", "Limited market share in emerging markets"]
+    "industry_outlook": {
+      "content": "The premium tech hardware segment is projected to grow 8% annually through 2025.",
+      "citation": "Gartner Industry Forecast, 2023-05-30"
     }
+  },
+  "sources": {
+    "search_queries": [
+      "Apple Inc. AAPL company overview financial",
+      "Apple Inc. AAPL recent financial performance quarterly results",
+      "Technology industry trends market analysis Apple Inc."
+    ],
+    "articles": [
+      {
+        "type": "article",
+        "url": "https://techcrunch.com/2023/06/06/apple-wwdc-ai-features/",
+        "extraction_date": "2023-09-01",
+        "publication_name": "TechCrunch",
+        "publication_date": "2023-06-06"
+      },
+      // Additional source entries...
+    ]
   }
 }
 ```
 
 ## Key Methods
 
-### `web_search(query, num_results)`
+### `create_research_plan(input_data)`
 
-Performs a general web search using the WebResearchTool:
+Creates a structured research plan using the LLM with the input company information:
 
-1. Sends a search query to the search API
-2. Processes and formats the search results
-3. Returns a list of relevant search results
+```python
+plan = self._call_structured_llm(prompt, ResearchPlan)
+```
 
-### `research_company_news(ticker, company_name)`
+### `conduct_research(research_plan, depth)`
 
-Researches recent news about a company:
+Conducts comprehensive research based on the research plan, tracking all sources:
 
-1. Constructs a search query combining company name and ticker
-2. Uses news-specific search if available
-3. Uses LLM to analyze, summarize, and rate the news items
-4. Returns a list of relevant and impactful news items
+```python
+findings = {
+    # Research results...
+    "_sources": {  # Track all sources used in the research
+        "search_queries": [],
+        "articles": []
+    }
+}
+```
 
-### `research_industry_trends(industry, sector)`
+### `analyze_research_findings(research_findings, research_plan)`
 
-Researches trends in an industry or sector:
+Analyzes research findings to extract key insights with proper citation:
 
-1. Constructs a search query focused on industry trends
-2. Uses LLM to analyze search results and extract key trends
-3. Structures the information into a comprehensive industry analysis
-4. Returns insights about growth prospects, challenges, and competitive landscape
+```python
+# Ensure all insights have default citations if missing
+for field in ["market_trends", "competitive_position", "recent_events"]:
+    if field in analysis_dict:
+        for i, item in enumerate(analysis_dict[field]):
+            if not item.get("citation"):
+                analysis_dict[field][i]["citation"] = "Internal Analysis"
+```
 
-### `research_competitors(ticker, company_name, industry)`
+## Observability
 
-Researches a company's competitors:
+The Research Agent includes comprehensive observability:
 
-1. Constructs a search query focused on competitors
-2. Uses LLM to identify and analyze main competitors
-3. Compares relative market positions and competitive advantages
-4. Returns structured competitor analysis
+```python
+@monitor_agent_method()
+def create_research_plan(self, input_data: Dict[str, Any]) -> Dict[str, Any]:
+    self.tracer.start_task("create_research_plan", ticker=input_data.get("ticker"))
+    # Implementation...
+    self.tracer.end_task(status="success", result_summary={"ticker": result.get("ticker")})
+```
 
-### `process(input_data)`
-
-The main entry point that:
-
-1. Validates the input data
-2. Extracts company information from the input
-3. Conducts research on company news, industry trends, and competitors
-4. Combines all research results into a structured output
-
-## Search API Integration
-
-The Research Agent uses the WebResearchTool, which integrates with search APIs like SerpAPI to perform web searches. Alternative search providers can be implemented by modifying the WebResearchTool.
+This provides:
+- Detailed method execution logging
+- Task tracing for complex operations
+- Performance metrics for research operations
+- Structured error reporting
 
 ## Example Usage
 
@@ -179,26 +224,19 @@ researcher = ResearchAgent()
 # Create input data
 input_data = {
     "ticker": "AAPL",
-    "company_profile": [{
+    "company_data": {
         "companyName": "Apple Inc.",
         "sector": "Technology",
         "industry": "Consumer Electronics"
-    }],
-    "research_plan": {
-        "industry_research": {
-            "key_competitors": ["Samsung", "Xiaomi"]
-        }
     }
 }
 
 # Conduct research
 research_results = researcher.process(input_data)
 
-# Access specific research findings
-news = research_results.get("company_news", [])
-trends = research_results.get("industry_trends", {})
-competitors = research_results.get("competitor_analysis", {})
-
-print(f"Found {len(news)} relevant news items")
-print(f"Key industry trend: {trends.get('key_trends', [{}])[0].get('trend', '')}")
+# Access insights with citations
+market_trends = research_results["analysis"]["market_trends"]
+for trend in market_trends:
+    print(f"Trend: {trend['content']}")
+    print(f"Source: {trend['citation']}")
 ```
