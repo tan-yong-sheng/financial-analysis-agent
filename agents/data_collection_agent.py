@@ -98,10 +98,14 @@ class DataCollectionAgent(BaseAgent):
         # If a specific indicator is requested
         if indicator_name:
             try:
-                url = f"{self.base_url}/technical_indicator/{ticker}/1day/{indicator_name}?apikey={self.api_key}&timePeriod={time_period}"
+                # Fix the URL format for technical indicators
+                url = f"{self.base_url}/technical_indicator/daily/{ticker}?type={indicator_name}&period={time_period}&apikey={self.api_key}"
                 response = requests.get(url)
                 response.raise_for_status()
-                return {"historical": response.json()}
+                data = response.json()
+                # Add debug logging
+                logger.debug(f"Response for {indicator_name}: {data}")
+                return {"historical": data}
             except requests.exceptions.RequestException as e:
                 logger.error(f"Error fetching {indicator_name} for {ticker}: {str(e)}")
                 return {"error": f"Failed to fetch {indicator_name}: {str(e)}"}
@@ -109,10 +113,14 @@ class DataCollectionAgent(BaseAgent):
         # If no specific indicator, fetch all from config
         for indicator in TECHNICAL_INDICATORS:
             try:
-                url = f"{self.base_url}/technical_indicator/{ticker}/1day/{indicator}?apikey={self.api_key}&timePeriod={time_period}"
+                # Fix the URL format for technical indicators
+                url = f"{self.base_url}/technical_indicator/daily/{ticker}?type={indicator}&period={time_period}&apikey={self.api_key}"
                 response = requests.get(url)
                 response.raise_for_status()
-                indicators[indicator] = {"historical": response.json()}
+                data = response.json()
+                # Add debug logging
+                logger.debug(f"Response for {indicator}: {data}")
+                indicators[indicator] = {"historical": data}
             except requests.exceptions.RequestException as e:
                 logger.error(f"Error fetching {indicator} for {ticker}: {str(e)}")
                 indicators[indicator] = {"error": f"Failed to fetch {indicator}: {str(e)}"}
@@ -189,7 +197,6 @@ class DataCollectionAgent(BaseAgent):
         collected_data = {
             "ticker": ticker,
             "company_profile": self.get_company_profile(ticker),
-            # Fix: Replace self.collector references with self
             "stock_price": self.get_stock_price(ticker) if hasattr(self, 'get_stock_price') else None
         }
         
@@ -202,7 +209,7 @@ class DataCollectionAgent(BaseAgent):
         if "cash_flow" in statements:
             collected_data["cash_flow"] = self.get_cash_flow(ticker, period, limit)
             
-        # Fix other collector references
+        # Collect ratios and metrics
         ratios_metrics = data_plan.get("ratios_and_metrics", [])
         if "key_metrics" in ratios_metrics:
             collected_data["key_metrics"] = self.get_key_metrics(ticker, period, limit) if hasattr(self, 'get_key_metrics') else None
@@ -222,7 +229,6 @@ class DataCollectionAgent(BaseAgent):
             else:
                 indicator_name = indicator
                 
-            # Fix: Replace self.collector with self
             if hasattr(self, 'get_technical_indicators'):
                 indicators_data[indicator_name] = self.get_technical_indicators(
                     ticker, indicator_name, time_period

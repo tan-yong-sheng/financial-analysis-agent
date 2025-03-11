@@ -203,21 +203,11 @@ class FinancialDataTool:
         Returns:
             dict: Technical indicator data
         """
-        # Technical indicators endpoint requires different URL structure
+        # Technical indicators endpoint requires specific format
         indicator = indicator.lower()
         
-        # Map indicator names to endpoints
-        indicator_endpoints = {
-            "sma": "technical_indicator/daily/sma",
-            "ema": "technical_indicator/daily/ema",
-            "wma": "technical_indicator/daily/wma",
-            "rsi": "technical_indicator/daily/rsi",
-            "macd": "technical_indicator/daily/macd"
-        }
-        
-        # Use proper endpoint if available, default to RSI if not found
-        endpoint = indicator_endpoints.get(indicator, "technical_indicator/daily/rsi")
-        
-        return self._make_request(f"{endpoint}/{ticker}", {
-            "period": time_period
+        # The correct endpoint is technical_indicator/daily/{ticker} with type as parameter
+        return self._make_request(f"technical_indicator/daily/{ticker}", {
+            "type": indicator,
+            "timePeriod": time_period
         })
