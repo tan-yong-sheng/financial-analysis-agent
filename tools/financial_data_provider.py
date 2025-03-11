@@ -2,26 +2,34 @@ import os
 import requests
 import json
 from typing import Dict, Any, List, Optional
-import logging
+import time
 from dotenv import load_dotenv
 
 # Load environment variables
 load_dotenv()
 
 from config import FMP_API_KEY, FMP_BASE_URL
+from utils.observability import StructuredLogger, monitor_agent_method
 
-logger = logging.getLogger("Financial_Data_Provider")
 
 class FinancialDataProvider:
     """Provider for financial data from the Financial Modeling Prep API."""
     
     def __init__(self):
-        """Initialize the financial data provider with API key."""
+        """Initialize the financial data provider with enhanced logging."""
+        self.logger = StructuredLogger("financial_data_provider")
         self.api_key = FMP_API_KEY
-        if not self.api_key:
-            logger.warning("FMP_API_KEY not found in environment variables")
         self.base_url = FMP_BASE_URL
         
+        # Initialize request metrics
+        self.request_count = 0
+        self.error_count = 0
+        self.last_request_time = None
+        
+        if not self.api_key:
+            self.logger.error("FMP_API_KEY not found in environment variables")
+        
+    @monitor_agent_method()
     def _make_request(self, endpoint: str, params: Dict[str, Any] = None) -> Dict[str, Any]:
         """
         Make a request to the FMP API.
@@ -40,21 +48,85 @@ class FinancialDataProvider:
         params['apikey'] = self.api_key
         
         url = f"{self.base_url}/{endpoint}"
+        start_time = time.time()
+        
+        # Track request timing
+        if self.last_request_time:
+            time_since_last_request = start_time - self.last_request_time
+            if time_since_last_request < 1:  # Less than 1 second between requests
+                self.logger.warning("High request frequency detected",
+                                  time_between_requests=time_since_last_request)
+        
+        self.last_request_time = start_time
+        self.request_count += 1
+        
+        # Log request attempt
+        self.logger.debug("Making API request",
+                         url=url,
+                         endpoint=endpoint,
+                         params={k: v for k, v in params.items() if k != 'apikey'})  # Don't log API key
         
         try:
             response = requests.get(url, params=params)
-            response.raise_for_status()  # Raise exception for 4XX/5XX responses
+            response.raise_for_status()
+            
+            execution_time = time.time() - start_time
+            response_size = len(response.content)
+            status_code = response.status_code
+            
+            # Log successful response
+            self.logger.info("API request successful",
+                           endpoint=endpoint,
+                           status_code=status_code,
+                           execution_time=execution_time,
+                           response_size=response_size,
+                           total_requests=self.request_count)
+            
             return response.json()
+            
         except requests.exceptions.HTTPError as e:
-            logger.error(f"HTTP error when calling {url}: {str(e)}")
+            self.error_count += 1
+            execution_time = time.time() - start_time
+            
+            # Check for rate limiting
+            if e.response.status_code == 429:
+                self.logger.error("Rate limit exceeded",
+                                endpoint=endpoint,
+                                execution_time=execution_time,
+                                error_count=self.error_count,
+                                headers=dict(e.response.headers))
+            else:
+                self.logger.error("HTTP error in API request",
+                                endpoint=endpoint,
+                                status_code=e.response.status_code,
+                                execution_time=execution_time,
+                                error_count=self.error_count,
+                                error_message=str(e))
             return {"error": str(e)}
+            
         except requests.exceptions.RequestException as e:
-            logger.error(f"Request error when calling {url}: {str(e)}")
+            self.error_count += 1
+            execution_time = time.time() - start_time
+            self.logger.error("Request error in API call",
+                            endpoint=endpoint,
+                            execution_time=execution_time,
+                            error_count=self.error_count,
+                            error_type=type(e).__name__,
+                            error_message=str(e))
             return {"error": str(e)}
-        except json.JSONDecodeError:
-            logger.error(f"Failed to decode JSON response from {url}")
+            
+        except json.JSONDecodeError as e:
+            self.error_count += 1
+            execution_time = time.time() - start_time
+            self.logger.error("Failed to decode JSON response",
+                            endpoint=endpoint,
+                            execution_time=execution_time,
+                            error_count=self.error_count,
+                            error_type=type(e).__name__,
+                            error_message=str(e))
             return {"error": "Invalid JSON response"}
 
+    @monitor_agent_method()
     def get_company_profile(self, ticker: str) -> List[Dict[str, Any]]:
         """
         Get company profile information.
@@ -67,6 +139,7 @@ class FinancialDataProvider:
         """
         return self._make_request(f"profile/{ticker}")
     
+    @monitor_agent_method()
     def get_income_statement(self, ticker: str, period: str = "annual", limit: int = 5) -> List[Dict[str, Any]]:
         """
         Get income statement data.
@@ -84,6 +157,7 @@ class FinancialDataProvider:
             "limit": limit
         })
     
+    @monitor_agent_method()
     def get_balance_sheet(self, ticker: str, period: str = "annual", limit: int = 5) -> List[Dict[str, Any]]:
         """
         Get balance sheet data.
@@ -101,6 +175,7 @@ class FinancialDataProvider:
             "limit": limit
         })
     
+    @monitor_agent_method()
     def get_cash_flow(self, ticker: str, period: str = "annual", limit: int = 5) -> List[Dict[str, Any]]:
         """
         Get cash flow statement data.
@@ -118,6 +193,7 @@ class FinancialDataProvider:
             "limit": limit
         })
     
+    @monitor_agent_method()
     def get_key_metrics(self, ticker: str, period: str = "annual", limit: int = 5) -> List[Dict[str, Any]]:
         """
         Get key company metrics.
@@ -135,6 +211,7 @@ class FinancialDataProvider:
             "limit": limit
         })
     
+    @monitor_agent_method()
     def get_financial_ratios(self, ticker: str, period: str = "annual", limit: int = 5) -> List[Dict[str, Any]]:
         """
         Get financial ratios.
@@ -152,6 +229,7 @@ class FinancialDataProvider:
             "limit": limit
         })
     
+    @monitor_agent_method()
     def get_stock_price(self, ticker: str, timeseries: int = 365) -> Dict[str, Any]:
         """
         Get historical stock price data.
@@ -176,6 +254,7 @@ class FinancialDataProvider:
             "current_quote": quote_data[0] if isinstance(quote_data, list) and len(quote_data) > 0 else {}
         }
     
+    @monitor_agent_method()
     def get_analyst_estimates(self, ticker: str, period: str = "annual", limit: int = 5) -> List[Dict[str, Any]]:
         """
         Get analyst estimates.
@@ -193,6 +272,7 @@ class FinancialDataProvider:
             "limit": limit
         })
         
+    @monitor_agent_method()
     def get_technical_indicators(self, ticker: str, indicator: str, time_period: int = 14) -> Dict[str, Any]:
         """
         Get technical indicators for a stock.
@@ -224,6 +304,7 @@ class FinancialDataProvider:
             "period": time_period
         })
 
+    @monitor_agent_method()
     def get_technical_indicator(self, ticker: str, indicator: str, time_period: int = 14) -> List[Dict[str, Any]]:
         """
         Get technical indicator data from Financial Modeling Prep API.
@@ -248,7 +329,10 @@ class FinancialDataProvider:
         }
         
         if indicator not in indicator_types:
-            logger.warning(f"Unsupported indicator: {indicator}")
+            self.logger.warning("Unsupported technical indicator",
+                              ticker=ticker,
+                              indicator=indicator,
+                              supported_types=list(indicator_types.keys()))
             return []
             
         try:
@@ -268,20 +352,40 @@ class FinancialDataProvider:
             # Check for valid response
             if isinstance(response, dict):
                 if "error" in response:
-                    logger.error(f"API error for {indicator} on {ticker}: {response['error']}")
+                    self.logger.error("API error in technical indicator request",
+                                    ticker=ticker,
+                                    indicator=indicator,
+                                    error_message=response['error'])
                     return []
                     
-                return response.get("technicalIndicator", [])
+                data = response.get("technicalIndicator", [])
+                self.logger.info("Technical indicator data retrieved",
+                               ticker=ticker,
+                               indicator=indicator,
+                               data_points=len(data))
+                return data
             elif isinstance(response, list):
+                self.logger.info("Technical indicator data retrieved",
+                               ticker=ticker,
+                               indicator=indicator,
+                               data_points=len(response))
                 return response
             else:
-                logger.warning(f"Unexpected response format for {indicator} on {ticker}")
+                self.logger.warning("Unexpected technical indicator response format",
+                                  ticker=ticker,
+                                  indicator=indicator,
+                                  response_type=type(response).__name__)
                 return []
                 
         except Exception as e:
-            logger.error(f"Error fetching {indicator} for {ticker}: {str(e)}")
+            self.logger.error("Error fetching technical indicator",
+                            ticker=ticker,
+                            indicator=indicator,
+                            error_type=type(e).__name__,
+                            error_message=str(e))
             return []
 
+    @monitor_agent_method()
     def check_api_status(self) -> Dict[str, Any]:
         """
         Check the status of the API key to identify quota issues.
@@ -292,8 +396,16 @@ class FinancialDataProvider:
         try:
             endpoint = "status"
             response = self._make_request(endpoint)
-            logger.info(f"API Status check result: {response}")
+            # Log API status metrics
+            self.logger.info("API status check completed",
+                           requests_made=self.request_count,
+                           errors_encountered=self.error_count,
+                           status=response)
             return response
         except Exception as e:
-            logger.error(f"Error checking API status: {str(e)}")
+            self.logger.error("API status check failed",
+                            error_type=type(e).__name__,
+                            error_message=str(e),
+                            requests_made=self.request_count,
+                            errors_encountered=self.error_count)
             return {"error": str(e)}

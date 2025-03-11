@@ -53,11 +53,23 @@ markdown_extensions:
 # Navigation structure
 nav:
   - Home: index.md
-  - Getting Started: getting-started.md
-  - Architecture: architecture.md
-  - Usage Guide: usage.md
+  - Getting Started:
+    - Overview: getting-started.md
+    - Installation: getting-started/installation.md
+    - Configuration: getting-started/configuration.md
+    - Quick Start: getting-started/quickstart.md
+  - Architecture:
+    - Overview: architecture.md
+    - Components:
+      - Agent System: components/agent-system.md
+      - Data Providers: components/data-providers.md
+      - Tools: components/tools.md
+  - Usage:
+    - Guide: usage.md
+    - Examples: examples/basic-usage.md
   - Agents:
     - Overview: agents/index.md
+    - Agent Design: agents/overview.md
     - Planner Agent: agents/planner_agent.md
     - Data Collection Agent: agents/data_collection_agent.md
     - Research Agent: agents/research_agent.md
@@ -73,5 +85,16 @@ nav:
     - Data Transformer: tools/data_transformer.md
     - Financial Data Provider: tools/financial_data_provider.md
     - Web Research Tool: tools/web_research.md
-  - API Reference: api-reference.md
-  - Contributing: contributing.md
+  - API:
+    - Reference: api-reference.md
+    - Agent API: api/agents.md
+    - Tools API: api/tools.md
+  - Development:
+    - Testing:
+      - Overview: testing/index.md
+      - Writing Tests: testing/writing-tests.md
+      - Coverage: testing/coverage.md
+    - Logging:
+      - Overview: logging/index.md
+      - Implementation: logging/implementing-logging.md
+    - Contributing: contributing.md
