@@ -170,7 +170,7 @@ The Analysis Agent uses the FinancialAnalyzer module to perform quantitative ana
 - Income statement analysis (revenue trends, profit margins, growth rates)
 - Balance sheet analysis (liquidity, leverage, asset efficiency)
 - Cash flow analysis (operating cash flow, free cash flow, cash usage)
-- Technical indicators analysis (moving averages, RSI, MACD, etc.)
+- Technical indicators analysis (moving averages, RSI, etc.)
 
 ## JSON Serialization
 

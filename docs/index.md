@@ -1,10 +1,10 @@
-# Welcome to Financial Analysis System
+# Welcome to Financial Analysis Agent
 
 This is your documentation homepage. Start adding your content here!
 
 ## Overview
 
-The Financial Analysis System is designed to:
+The Financial Analysis Agent is designed to:
 
 - Automatically collect financial data for publicly traded companies
 - Analyze financial statements and calculate key metrics

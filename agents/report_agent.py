@@ -13,7 +13,7 @@ class ReportAgent(BaseAgent):
     """Agent responsible for generating financial reports in markdown format."""
     
     def __init__(self, base_url: str = None, model_name: str = None):
-        role = "a financial report writer that creates clear, properly formatted markdown reports"
+        role = "a financial report writer that creates clear, properly formatted markdown reports with HTML tables"
         super().__init__(role, "Report Writer", base_url=base_url, model_name=model_name)
         
     def generate_report(self, analysis_results: Dict[str, Any], ticker: str) -> str:
@@ -46,8 +46,9 @@ class ReportAgent(BaseAgent):
         FORMAT REQUIREMENTS - CRITICALLY IMPORTANT:
         - Format the report as clean markdown with proper heading levels
         - Use # for title, ## for main sections, ### for subsections
+        - Use HTML tables instead of markdown tables for better formatting
+        - Format tables as: <table border='1'><thead><tr><th>Header1</th>...</tr></thead><tbody><tr><td>Data1</td>...</tr>...</tbody></table>
         - DO NOT include markdown code block delimiters (```)
-        - Make sure all tables are properly formatted with | and - characters
         - Include proper spacing between sections
         """
         
@@ -88,6 +89,9 @@ class ReportAgent(BaseAgent):
         # Ensure proper spacing between sections
         cleaned_md = re.sub(r'\n{3,}', '\n\n', cleaned_md)
         
+        # Preserve HTML tables - skip markdown table formatting corrections for HTML tables
+        # This ensures HTML tables remain intact
+        
         return cleaned_md
     
     def fact_check_report(self, report: str, analysis_results: Dict[str, Any]) -> str:
@@ -119,9 +123,10 @@ class ReportAgent(BaseAgent):
         If you find any discrepancies or factual errors:
         1. Correct the errors
         2. Make sure your corrections maintain proper markdown formatting
-        3. Do NOT use markdown code blocks in your response
+        3. Keep all tables in HTML format using <table>, <tr>, <th>, <td> tags
+        4. Do NOT use markdown code blocks in your response
         
-        Return the corrected report as clean markdown text.
+        Return the corrected report as clean markdown text with HTML tables.
         """
         
         corrected_report = self._call_llm(prompt)

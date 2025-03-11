@@ -138,7 +138,7 @@ class FinancialDataCollector:
         Returns:
             dict: Technical indicator data
         """
-        indicators = {'rsi': [], 'macd': [], 'sma': [], 'ema': []}
+        indicators = {'rsi': [], 'sma': [], 'ema': []}
     
         try:
             # Fetch each indicator type from the provider

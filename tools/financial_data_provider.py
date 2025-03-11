@@ -214,11 +214,10 @@ class FinancialDataProvider:
             "ema": "technical_indicator/daily/ema",
             "wma": "technical_indicator/daily/wma",
             "rsi": "technical_indicator/daily/rsi",
-            "macd": "technical_indicator/daily/macd"
         }
         
-        # Use proper endpoint if available, default to RSI if not found
-        endpoint = indicator_endpoints.get(indicator, "technical_indicator/daily/rsi")
+        # Use proper endpoint if available
+        endpoint = indicator_endpoints.get(indicator)
         
         return self._make_request(f"{endpoint}/{ticker}", {
             "period": time_period
@@ -230,7 +229,7 @@ class FinancialDataProvider:
         
         Args:
             ticker (str): Company ticker symbol
-            indicator (str): Indicator type ('rsi', 'macd', 'sma', 'ema')
+            indicator (str): Indicator type ('rsi', 'sma', 'ema')
             time_period (int): Time period for indicator calculation
             
         Returns:
@@ -243,8 +242,7 @@ class FinancialDataProvider:
             "sma": "sma",
             "ema": "ema",
             "wma": "wma",
-            "rsi": "rsi",
-            "macd": "macd"
+            "rsi": "rsi"
         }
         
         if indicator not in indicator_types:

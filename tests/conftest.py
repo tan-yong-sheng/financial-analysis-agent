@@ -76,12 +76,6 @@ def sample_technical_data():
                 {"date": "2023-12-31", "value": 65.5},
                 {"date": "2023-12-30", "value": 64.2}
             ]
-        },
-        "macd": {
-            "historical": [
-                {"date": "2023-12-31", "value": 2.5},
-                {"date": "2023-12-30", "value": 2.1}
-            ]
         }
     }
 

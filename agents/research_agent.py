@@ -70,7 +70,7 @@ class ResearchAgent(BaseAgent):
                 result = plan.model_dump()
                 self.tracer.end_task(status="success", result_summary={"ticker": result.get("ticker")})
                 return result
-                
+
             except Exception as e:
                 logger.error(f"Error creating research plan: {str(e)}")
                 self.tracer.end_task(status="error", error_message=str(e))
@@ -142,7 +142,7 @@ class ResearchAgent(BaseAgent):
         appear on this page, focusing on financial/business information.
         Include a title, publication date, content paragraphs, and a concise 2-3 sentence summary.
         """
-        
+
         try:
             # Use instructor for structured output
             content = self._call_structured_llm(prompt, ArticleContent)
@@ -153,6 +153,7 @@ class ResearchAgent(BaseAgent):
         except Exception as e:
             logger.error(f"Error extracting article content: {str(e)}")
             return {"error": f"Failed to extract content: {str(e)}"}
+
 
     def conduct_research(self, research_plan: Dict[str, Any], depth: int = MAX_RESEARCH_DEPTH) -> Dict[str, Any]:
         """

@@ -72,7 +72,7 @@ class PlannerAgent(BaseAgent):
                 "raw_plan": response,
                 "basic_plan": {
                     "financial_analysis": ["income_statement", "balance_sheet", "cash_flow"],
-                    "technical_analysis": ["SMA", "EMA", "RSI", "MACD"],
+                    "technical_analysis": ["SMA", "EMA", "RSI"],
                     "industry_research": ["competitors", "industry_trends"],
                     "recent_developments": ["latest_earnings", "news"],
                     "report_structure": ["summary", "financial_analysis", "technical_analysis", "outlook", "recommendation"]

@@ -61,9 +61,7 @@ class TestFinancialAnalyzer:
         
         # Assertions
         assert "rsi" in result
-        assert "macd" in result
         assert result["rsi"]["latest_value"] == 65.5
-        assert result["macd"]["latest_value"] == 2.5
         
         # Check trend calculation
         assert result["rsi"]["recent_trend"] == "up"  # 65.5 > 64.2

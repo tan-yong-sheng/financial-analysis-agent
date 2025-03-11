@@ -18,7 +18,7 @@ SERPAPI_API_KEY = os.getenv('SERPAPI_API_KEY')
 # Analysis configuration
 DEFAULT_PERIOD = "annual"  # or "quarter"
 DEFAULT_LIMIT = 5  # Number of periods to analyze
-TECHNICAL_INDICATORS = ["rsi", "macd", "sma", "ema"]
+TECHNICAL_INDICATORS = ["rsi", "sma", "ema"]
 
 # API Base URLs
 FMP_BASE_URL = "https://financialmodelingprep.com/api/v3"

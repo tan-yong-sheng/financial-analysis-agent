@@ -71,7 +71,7 @@ The Planner Agent produces a research plan in JSON format:
     }
   },
   "technical_analysis": {
-    "indicators": ["SMA", "EMA", "RSI", "MACD"],
+    "indicators": ["SMA", "EMA", "RSI"],
     "time_periods": ["50-day", "200-day"],
     "importance": "medium"
   },

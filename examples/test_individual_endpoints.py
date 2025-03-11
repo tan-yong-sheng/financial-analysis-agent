@@ -69,7 +69,7 @@ def test_endpoint(endpoint_path: str, params: Dict[str, Any] = None) -> None:
 
 def test_technical_indicator_endpoints(ticker: str) -> None:
     """Test various technical indicator endpoints."""
-    indicators = ["rsi", "macd", "sma", "ema"]
+    indicators = ["rsi", "sma", "ema"]
     
     logger.info("Testing technical indicator endpoints")
     

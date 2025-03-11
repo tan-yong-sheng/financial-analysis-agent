@@ -129,7 +129,6 @@ The `analyze_technical_data` method processes various technical indicators:
 
 - Moving averages (SMA, EMA)
 - Relative Strength Index (RSI)
-- Moving Average Convergence Divergence (MACD)
 - Analysis of recent trends and signals
 
 Example output:
