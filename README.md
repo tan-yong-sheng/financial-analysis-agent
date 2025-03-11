@@ -1,4 +1,4 @@
-# Financial Analysis System
+# Financial Analysis Agent
 
 An AI-powered financial analysis tool that automates comprehensive stock research, statement analysis, and report generation.
 
