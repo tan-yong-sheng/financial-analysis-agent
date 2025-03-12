@@ -106,8 +106,55 @@ class ResearchAgent(BaseAgent):
         Returns:
             list: Search results with source information
         """
-        # In a real implementation, this would use SerpAPI
-        # For now, simulate a response with structured information
+        # Check if we should use actual SerpAPI or simulation
+        if SERPAPI_API_KEY:
+            try:
+                # Use direct REST API call instead of the Python library
+                import requests
+                
+                # Set up the search parameters
+                base_url = "https://serpapi.com/search"
+                params = {
+                    "q": query,
+                    "api_key": SERPAPI_API_KEY,
+                    "engine": "google",
+                    "num": num_results,
+                    "gl": "us"  # Country to use for the search
+                }
+                
+                # Execute the search
+                response = requests.get(base_url, params=params)
+                response.raise_for_status()  # Raise exception for HTTP errors
+                results = response.json()
+                
+                # Process the organic results
+                organic_results = results.get("organic_results", [])
+                
+                # Format the results
+                formatted_results = []
+                for i, result in enumerate(organic_results[:num_results], 1):
+                    formatted_result = {
+                        "title": result.get("title", ""),
+                        "link": result.get("link", ""),
+                        "snippet": result.get("snippet", ""),
+                        "_source": {
+                            "type": "web_search",
+                            "query": query,
+                            "search_date": self._get_current_date(),
+                            "result_position": i,
+                            "search_engine": "SerpAPI"
+                        }
+                    }
+                    formatted_results.append(formatted_result)
+                
+                return formatted_results
+                
+            except Exception as e:
+                logger.error(f"Error using SerpAPI REST API: {str(e)}. Falling back to simulation.")
+        else:
+            logger.warning("No SERPAPI_API_KEY found. Using simulated search results.")
+        
+        # Fall back to simulation if SerpAPI fails or is not configured
         prompt = f"""
         Generate {num_results} realistic search results for the query: "{query}"
         
